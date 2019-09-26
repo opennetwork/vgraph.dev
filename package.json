@@ -5,7 +5,7 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --declaration && npm run tslint && node -r esm correct-import-extensions.js && node -r esm ./generate-site.js",
+    "build": "tsc --declaration && npm run tslint && node -r esm correct-import-extensions.js && node -r esm ./generate-site.js && node -r esm ./generate-marshalled.js",
     "watch": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "prepublishOnly": "npm run build"

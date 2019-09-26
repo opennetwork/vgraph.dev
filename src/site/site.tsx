@@ -10,9 +10,7 @@ export function Site(): VNode {
         </head>
         <body>
           <h1>Test</h1>
-          <p>
-            This is an example
-          </p>
+          <p>This is an example</p>
           <script type="module" src="/index.js"></script>
         </body>
       </html>
