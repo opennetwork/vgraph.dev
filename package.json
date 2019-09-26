@@ -1,0 +1,37 @@
+{
+  "name": "@opennetwork/vgraph.dev",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --declaration && npm run tslint && node -r esm correct-import-extensions.js && node -r esm ./generate-site.js",
+    "watch": "tsc -w",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {},
+  "dependencies": {
+    "@opennetwork/vdom": "^2.0.0",
+    "@opennetwork/vnode": "^14.0.0",
+    "@opennetwork/vnode-fragment": "^3.0.0",
+    "@opennetwork/vnode-hooks": "^3.0.0",
+    "htm": "^2.2.1",
+    "iterable": "^5.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/opennetwork/vgraph.dev.git"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.2",
+    "@babel/core": "^7.6.2",
+    "@types/jsdom": "^12.2.4",
+    "babel-plugin-htm": "^2.2.0",
+    "esm": "^3.2.25",
+    "filehound": "^1.17.3",
+    "jsdom": "^15.1.1",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.3"
+  }
+}
