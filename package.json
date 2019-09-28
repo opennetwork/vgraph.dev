@@ -12,7 +12,7 @@
   },
   "peerDependencies": {},
   "dependencies": {
-    "@opennetwork/vdom": "^2.0.0",
+    "@opennetwork/vdom": "^3.0.0",
     "@opennetwork/vnode": "^14.0.0",
     "@opennetwork/vnode-fragment": "^3.0.0",
     "@opennetwork/vnode-hooks": "^3.0.0",

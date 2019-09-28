@@ -62,7 +62,6 @@ function isExperimental(options: object): boolean {
 }
 
 export function h<O extends object>(source: Source<O>, options?: O, ...children: VNodeRepresentationSource[]): VNode {
-  console.log(source, options, children);
   if (source === "fragment") {
     return h(Fragment, options, ...children);
   }

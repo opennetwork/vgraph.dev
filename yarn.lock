@@ -135,10 +135,12 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@opennetwork/vdom@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@opennetwork/vdom/-/vdom-2.0.0.tgz#0d86ee4076b4c644e6a82ddd48e330d4a8ede844"
-  integrity sha512-fDfAP/grwTf6e/puwnmMfFmfb/GDgIID35jR5tlfr2wAfbSkG8B6wL9cvgTI1B8dPd7zZr9su/sL/i26AkkJJg==
+"@opennetwork/vdom@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/@opennetwork/vdom/-/vdom-3.0.0.tgz#5a1cc7249d85d558c610812df54bd70bc30cb7b2"
+  integrity sha512-tCMdfc9dORYKKlPLKlspA9/qfONmBOu0hnXNlO/eqIILyVIRXadKF4oemxDiUsmxhJQhECNqjlIgyvvsf+rAnw==
+  dependencies:
+    htm "^2.2.1"
 
 "@opennetwork/vnode-fragment@^3.0.0":
   version "3.0.0"

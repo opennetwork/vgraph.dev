@@ -9,7 +9,7 @@ async function generate() {
   const marshalled = await marshal(Site());
   await promisify(writeFile)("./dist/index.json", JSON.stringify(marshalled, null, "  "));
 
-  const produced = await asyncExtendedIterable(produce(Site())).map(list => asyncExtendedIterable(list).map(node => marshal(node)).toArray()).toArray();
+  const produced = await asyncExtendedIterable(produce(Site())).map(node => marshal(node)).toArray();
   await promisify(writeFile)("./dist/index.html.json", JSON.stringify(produced, null, "  "));
 }
 
