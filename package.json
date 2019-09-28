@@ -5,10 +5,12 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && tsc --declaration && npm run tslint && node -r esm correct-import-extensions.js && node -r esm ./generate-site.js && node -r esm ./generate-marshalled.js && parcel build dist/index.html",
+    "build": "rm -rf dist && npm run tslint && npm run build:nofus && node -r esm ./generate-marshalled.js && parcel build dist/index.html",
+    "build:nofus": "tsc --declaration && node -r esm correct-import-extensions.js && node -r esm ./generate-site.js",
     "watch": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "start": "rm -rf dist && npm run build:nofus && concurrently \"npm run watch\" \"parcel dist/index.html -d website --open\""
   },
   "peerDependencies": {},
   "dependencies": {
@@ -31,6 +33,7 @@
     "@babel/runtime": "^7.6.2",
     "@types/jsdom": "^12.2.4",
     "babel-plugin-htm": "^2.2.0",
+    "concurrently": "^4.1.2",
     "esm": "^3.2.25",
     "filehound": "^1.17.3",
     "jsdom": "^15.1.1",
