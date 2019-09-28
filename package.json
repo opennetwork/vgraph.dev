@@ -5,7 +5,7 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --declaration && npm run tslint && node -r esm correct-import-extensions.js && node -r esm ./generate-site.js && node -r esm ./generate-marshalled.js",
+    "build": "rm -rf dist && tsc --declaration && npm run tslint && node -r esm correct-import-extensions.js && node -r esm ./generate-site.js && node -r esm ./generate-marshalled.js && parcel build dist/index.html",
     "watch": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "prepublishOnly": "npm run build"
@@ -26,11 +26,15 @@
   "devDependencies": {
     "@babel/cli": "^7.6.2",
     "@babel/core": "^7.6.2",
+    "@babel/plugin-proposal-async-generator-functions": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@babel/runtime": "^7.6.2",
     "@types/jsdom": "^12.2.4",
     "babel-plugin-htm": "^2.2.0",
     "esm": "^3.2.25",
     "filehound": "^1.17.3",
     "jsdom": "^15.1.1",
+    "parcel-bundler": "^1.12.3",
     "tslint": "^5.20.0",
     "typescript": "^3.6.3"
   }

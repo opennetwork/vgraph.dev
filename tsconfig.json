@@ -23,7 +23,8 @@
             ]
         },
         "jsx": "react",
-        "jsxFactory": "h"
+        "jsxFactory": "h",
+        "resolveJsonModule": true
     },
     "include": [
         "src/**/*"

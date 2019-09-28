@@ -1,5 +1,6 @@
 import { h } from "./h";
 import { VNode } from "@opennetwork/vnode";
+import { IntervalExample } from "./contents/examples/interval";
 
 export function SiteHead(): VNode {
   return (
@@ -12,9 +13,10 @@ export function SiteHead(): VNode {
 export function SiteBody(): VNode {
   return (
     <fragment>
-      <h1>Test</h1>
-      <p>This is an example</p>
-      {/*<script type="module" src="/index.js"></script>*/}
+      <h1 onAttached={console.log}>Test</h1>
+      <p onAttached={console.log}>This is an example</p>
+      <IntervalExample />
+      <script src="./index.js" onAttached={console.log} />
     </fragment>
   );
 }

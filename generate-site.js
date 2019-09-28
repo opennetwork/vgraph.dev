@@ -1,4 +1,4 @@
-import { SiteHead, SiteBody } from "./dist/site/index.js";
+import { SiteHead, SiteBody } from "./dist/site.js";
 import JSDOM from "jsdom";
 import { render } from "@opennetwork/vdom";
 import { writeFile } from "fs";

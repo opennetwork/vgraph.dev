@@ -8,7 +8,7 @@ declare namespace JSX {
   }
 
   interface HTMLElementAttributes extends HTMLAriaAttributes {
-    [key: string]: string;
+    [key: string]: string | Function;
     class?: string;
     accesskey?: string;
     contenteditable?: BooleanAttribute;
@@ -26,6 +26,9 @@ declare namespace JSX {
     tabindex?: string;
     title?: string;
     translate?: string;
+
+    onAttached?: (element: Element) => void | Promise<void>;
+    getDocumentNode?: () => Element | Promise<Element>;
   }
 
   interface HTMLButtonAttributes extends HTMLElementAttributes {

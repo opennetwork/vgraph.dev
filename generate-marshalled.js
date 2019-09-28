@@ -1,4 +1,4 @@
-import { SiteHead, SiteBody } from "./dist/site/index.js";
+import { SiteHead, SiteBody } from "./dist/site.js";
 import { marshal } from "@opennetwork/vnode";
 import { produce } from "@opennetwork/vdom/dist/produce";
 import { writeFile } from "fs";
