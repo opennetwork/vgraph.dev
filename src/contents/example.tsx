@@ -5,12 +5,12 @@ export type ExampleOptions = {
 };
 
 export async function *Example(options: ExampleOptions) {
-  yield <p>Loading example</p>;
+  yield <p>Loading example 3</p>;
 
   const imported = await import(options.src);
 
   console.log({ imported });
 
-  yield <p>Loaded example</p>;
+  yield <p>Loaded example 2</p>;
 
 }

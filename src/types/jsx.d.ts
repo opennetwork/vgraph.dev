@@ -27,7 +27,7 @@ declare namespace JSX {
     title?: string;
     translate?: string;
 
-    onAttached?: (element: Element) => void | Promise<void>;
+    onBeforeRender?: (element: Element) => void | Promise<void>;
     getDocumentNode?: () => Element | Promise<Element>;
   }
 

@@ -1,10 +1,10 @@
 import { SiteBody, SiteHead } from "./site";
-import { render } from "@opennetwork/vdom";
+import { litRender } from "@opennetwork/vdom";
 
 const start = Date.now();
 Promise.all([
-  render(SiteHead(), window.document.head),
-  render(SiteBody(), window.document.body)
+  litRender(SiteHead(), window.document.head),
+  litRender(SiteBody(), window.document.body)
 ])
   .then(() => console.log(`Render complete after ${(Date.now() - start) / 1000} seconds`))
   .catch(error => console.error(error));

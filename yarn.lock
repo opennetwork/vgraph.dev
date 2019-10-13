@@ -777,12 +777,10 @@
   resolved "https://registry.npmjs.org/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@opennetwork/vdom@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/@opennetwork/vdom/-/vdom-3.0.0.tgz#5a1cc7249d85d558c610812df54bd70bc30cb7b2"
-  integrity sha512-tCMdfc9dORYKKlPLKlspA9/qfONmBOu0hnXNlO/eqIILyVIRXadKF4oemxDiUsmxhJQhECNqjlIgyvvsf+rAnw==
-  dependencies:
-    htm "^2.2.1"
+"@opennetwork/vdom@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.npmjs.org/@opennetwork/vdom/-/vdom-4.1.0.tgz#5d1ebecda4c9fc9449dd59b67c10a61f042588dc"
+  integrity sha512-/xsL8vo+rmuB/DRlfyMNdhQ4JlQ5FE/Swf0+noXRUu5J/CCbmk4das9xJj/tQ+uB0i9k7M251ag/fC/aiOJ8ZQ==
 
 "@opennetwork/vnode-fragment@^3.0.0":
   version "3.0.0"
@@ -3315,6 +3313,11 @@ levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
+
+lit-html@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.npmjs.org/lit-html/-/lit-html-1.1.2.tgz#2e3560a7075210243649c888ad738eaf0daa8374"
+  integrity sha512-FFlUMKHKi+qG1x1iHNZ1hrtc/zHmfYTyrSvs3/wBTvaNtpZjOZGWzU7efGYVpgp6KvWeKF6ql9/KsCq6Z/mEDA==
 
 locate-path@^3.0.0:
   version "3.0.0"

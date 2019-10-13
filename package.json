@@ -5,8 +5,8 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && npm run tslint && npm run build:nofus && node -r esm ./generate-marshalled.js && parcel build dist/index.html",
-    "build:nofus": "tsc --declaration && node -r esm correct-import-extensions.js && node -r esm ./generate-site.js",
+    "build": "rm -rf dist && npm run tslint && npm run build:nofus && parcel build dist/index.html",
+    "build:nofus": "tsc --declaration && node -r esm correct-import-extensions.js && node -r esm ./generate-site.js && cp ./browser-environment.js ./dist/environment.js",
     "watch": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "prepublishOnly": "npm run build",
@@ -14,12 +14,13 @@
   },
   "peerDependencies": {},
   "dependencies": {
-    "@opennetwork/vdom": "^3.0.0",
+    "@opennetwork/vdom": "^4.1.0",
     "@opennetwork/vnode": "^14.0.0",
     "@opennetwork/vnode-fragment": "^3.0.0",
     "@opennetwork/vnode-hooks": "^3.0.0",
     "htm": "^2.2.1",
-    "iterable": "^5.6.0"
+    "iterable": "^5.6.0",
+    "lit-html": "^1.1.2"
   },
   "repository": {
     "type": "git",
