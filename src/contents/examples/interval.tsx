@@ -7,7 +7,7 @@ export async function *IntervalExample() {
 
   while (true) {
 
-    yield <p onBeforeRender={console.log} data-value={count}>Interval {count}</p>;
+    yield <p>Interval {count}</p>;
 
     if (!BROWSER) {
       break;
