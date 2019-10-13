@@ -1,6 +1,7 @@
 import { h } from "./h";
 import { VNode } from "@opennetwork/vnode";
 import { SiteContents } from "./contents";
+import { BROWSER, PRIMARY_SCRIPT_SOURCE } from "./environment";
 
 export function SiteHead(): VNode {
   return (
@@ -14,7 +15,7 @@ export function SiteBody(): VNode {
   return (
     <fragment>
       <SiteContents />
-      <script src="./index.js" onBeforeRender={console.log} />
+      {BROWSER ? undefined : <script data-primary-script src={PRIMARY_SCRIPT_SOURCE} onBeforeRender={console.log} />}
     </fragment>
   );
 }
