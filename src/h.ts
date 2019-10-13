@@ -1,7 +1,6 @@
 import { createVNodeWithContext, Source, VNode, VNodeRepresentationSource, Fragment } from "@opennetwork/vnode";
 import { isExperimental, isGetDocumentNode, isOnBeforeRender, EXPERIMENT_onBeforeRender, EXPERIMENT_getDocumentNode, EXPERIMENT_attributes } from "@opennetwork/vdom";
 
-
 export function h<O extends object>(source: Source<O>, options?: O, ...children: VNodeRepresentationSource[]): VNode {
   if (source === "fragment") {
     return h(Fragment, options, ...children);
@@ -12,9 +11,11 @@ export function h<O extends object>(source: Source<O>, options?: O, ...children:
     const resultingOptions: any = {
       [EXPERIMENT_attributes]: {},
     };
+
     const toJSON = () => ({
       attributes: resultingOptions[EXPERIMENT_attributes]
     });
+
     Object.defineProperty(resultingOptions, "toJSON", {
       value: toJSON,
       enumerable: false
@@ -38,5 +39,6 @@ export function h<O extends object>(source: Source<O>, options?: O, ...children:
 
     return h(source, resultingOptions, ...children);
   }
+
   return createVNodeWithContext({}, source, options || {}, ...children);
 }

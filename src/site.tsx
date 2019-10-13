@@ -15,7 +15,7 @@ export function SiteBody(): VNode {
   return (
     <fragment>
       <SiteContents />
-      {BROWSER ? undefined : <script data-primary-script src={PRIMARY_SCRIPT_SOURCE} onBeforeRender={console.log} />}
+      {BROWSER ? undefined : <script src={PRIMARY_SCRIPT_SOURCE} onBeforeRender={console.log} />}
     </fragment>
   );
 }

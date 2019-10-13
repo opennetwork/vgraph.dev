@@ -12,6 +12,7 @@ async function generate() {
 
   clean(dom);
   const html = dom.serialize();
+  console.log(html);
   await promisify(writeFile)("./dist/index.html", html);
 }
 
