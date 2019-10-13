@@ -5,7 +5,7 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && npm run tslint && npm run build:nofus && parcel build dist/index.html",
+    "build": "rm -rf dist && npm run tslint && npm run build:nofus",
     "build:nofus": "mkdir dist && cp -r ./src/* ./dist && cp -r web_modules ./dist/web_modules && tsc --declaration && node -r esm ./generate-site.js && node -r esm correct-import-extensions.js&& cp ./browser-environment.js ./dist/environment.js",
     "watch": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",

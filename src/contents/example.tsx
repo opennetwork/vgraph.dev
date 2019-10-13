@@ -24,7 +24,9 @@ export async function *Example({ runnable, source, key }: ExampleOptions) {
         <Component />
       </div>
       <pre>
-        {text.trim()}
+        <code>
+          {text.trim()}
+        </code>
       </pre>
     </fragment>
   );

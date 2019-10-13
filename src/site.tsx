@@ -7,6 +7,7 @@ export function SiteHead(): VNode {
   return (
     <fragment>
       <title>VGraph</title>
+      <link href="index.css" rel="stylesheet" type="text/css" />
     </fragment>
   );
 }
@@ -15,7 +16,7 @@ export function SiteBody(): VNode {
   return (
     <fragment>
       <SiteContents />
-      {BROWSER ? undefined : <script src={PRIMARY_SCRIPT_SOURCE} onBeforeRender={console.log} />}
+      <script src={PRIMARY_SCRIPT_SOURCE} onBeforeRender={console.log} type="module" />
     </fragment>
   );
 }

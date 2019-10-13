@@ -185,6 +185,7 @@ declare namespace JSX {
     h6: HTMLElementAttributes;
     script: HTMLScriptAttributes;
     pre: HTMLElementAttributes;
+    code: HTMLElementAttributes;
   }
 
   interface IntrinsicElements extends DOMElements {
