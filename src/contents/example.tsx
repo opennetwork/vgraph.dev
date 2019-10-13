@@ -1,33 +1,14 @@
 import { h } from "../h";
-import { BROWSER } from "../environment";
+import { RunExample, RunExampleOptions } from "./run-example";
+import { DisplayExample, DisplayExampleOptions } from "./display-example";
 
-export type ExampleOptions = {
-  runnable: string;
-  key: string;
-  source?: string;
-};
+export type ExampleOptions = RunExampleOptions & DisplayExampleOptions;
 
 export async function *Example({ runnable, source, key }: ExampleOptions) {
-  yield <p>Loading example</p>;
-  if (!BROWSER) {
-    return;
-  }
-  const [imported, response] = await Promise.all([
-    import(runnable),
-    fetch(source || runnable)
-  ]);
-  const text = await response.text();
-  const Component = imported[key];
   yield (
     <fragment>
-      <div class="example">
-        <Component />
-      </div>
-      <pre>
-        <code>
-          {text.trim()}
-        </code>
-      </pre>
+      <DisplayExample source={source} />
+      <RunExample runnable={runnable} key={key} />
     </fragment>
   );
 }
