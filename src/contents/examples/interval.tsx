@@ -1,9 +1,9 @@
 import { h } from "../../h";
 
 export async function *IntervalExample() {
-  yield <p>Waiting for interval</p>;
+  yield <fragment>Waiting for interval</fragment>;
   for (let count = 0; count <= 5; count += 1) {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    yield <p>Interval {count}</p>;
+    yield <fragment>Interval {count}</fragment>;
   }
 }

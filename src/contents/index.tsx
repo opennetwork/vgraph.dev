@@ -33,6 +33,12 @@ export function SiteContents() {
         This can be used to provide a loading component while an async task is being used for example
       </p>
       <Example runnable="./examples/interval.js" source="/contents/examples/interval.tsx" key="IntervalExample" wait={1000} />
+      <hr />
+      <p>
+        The next example shows one way to implement interactive components<br />
+        After the button is rendered the component waits for the "onClicked" promise to resolve before it updates the visual state again
+      </p>
+      <Example runnable="./examples/interactive-button.js" source="/contents/examples/interactive-button.tsx" key="InteractiveButton" wait={5000} />
     </fragment>
   );
 }
