@@ -4,11 +4,11 @@ import { DisplayExample, DisplayExampleOptions } from "./display-example";
 
 export type ExampleOptions = RunExampleOptions & DisplayExampleOptions;
 
-export async function *Example({ runnable, source, key }: ExampleOptions) {
+export async function *Example({ runnable, source, key, wait }: ExampleOptions) {
   yield (
     <fragment>
       <DisplayExample source={source} />
-      <RunExample runnable={runnable} key={key} />
+      <RunExample runnable={runnable} key={key} wait={wait} />
     </fragment>
   );
 }

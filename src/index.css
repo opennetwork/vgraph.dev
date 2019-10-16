@@ -1,6 +1,16 @@
+body {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
 pre {
   border-radius: 4px;
   color: white;
   background: #222222;
   padding: 10px;
+}
+
+.run-example {
+  border-radius: 4px;
+  padding: 10px;
+  border: 1px dashed #222222;
 }
