@@ -14,10 +14,10 @@
   },
   "peerDependencies": {},
   "dependencies": {
-    "@opennetwork/vdom": "^4.1.0",
-    "@opennetwork/vnode": "^14.0.0",
-    "@opennetwork/vnode-fragment": "^3.0.0",
-    "@opennetwork/vnode-hooks": "^3.0.0",
+    "@opennetwork/vdom": "^5.0.0",
+    "@opennetwork/vnode": "^15.2.0",
+    "@opennetwork/vnode-fragment": "^4.0.0",
+    "@opennetwork/vnode-hooks": "^4.0.0",
     "htm": "^2.2.1",
     "iterable": "^5.6.0",
     "lit-html": "^1.1.2"
