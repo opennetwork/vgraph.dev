@@ -3,7 +3,7 @@ import { Example } from "./example";
 
 export function SiteContents() {
   return (
-    <fragment>
+    <main>
       <h1>VGraph</h1>
       <p>
         VGraph is a collection of tooling to generate virtual graphs using JavaScript.
@@ -39,6 +39,6 @@ export function SiteContents() {
         After the button is rendered the component waits for the "onClicked" promise to resolve before it updates the visual state again
       </p>
       <Example runnable="./examples/interactive-button.js" source="/contents/examples/interactive-button.tsx" key="InteractiveButton" wait={5000} />
-    </fragment>
+    </main>
   );
 }

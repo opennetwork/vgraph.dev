@@ -14,3 +14,8 @@ pre {
   padding: 10px;
   border: 1px dashed #222222;
 }
+
+main {
+  margin: 0 auto;
+  max-width: 40rem;
+}
