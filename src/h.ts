@@ -1,19 +1,26 @@
 import { createVNodeWithContext, Source, VNode, VNodeRepresentationSource, Fragment } from "@opennetwork/vnode";
-import { isExperimental, isGetDocumentNode, isOnBeforeRender, EXPERIMENT_onBeforeRender, EXPERIMENT_getDocumentNode, EXPERIMENT_attributes } from "@opennetwork/vdom";
+import {
+  isGetDocumentNodeOptions,
+  isNativeOptions,
+  NativeOptions,
+  isOnBeforeRenderOptions,
+  isAttributesOptions
+} from "@opennetwork/vdom";
 
 export function h<O extends object>(source: Source<O>, options?: O, ...children: VNodeRepresentationSource[]): VNode {
   if (source === "fragment") {
     return h(Fragment, options, ...children);
   }
 
-  if (typeof source === "string" && !isExperimental(options)) {
+  if (typeof source === "string" && !isNativeOptions(options) && options) {
     // Please if you have a solution to do this without any, please let me know
-    const resultingOptions: any = {
-      [EXPERIMENT_attributes]: {},
+    const resultingOptions: Partial<NativeOptions> = {
+      type: "Element",
+      attributes: {},
     };
 
     const toJSON = () => ({
-      attributes: resultingOptions[EXPERIMENT_attributes]
+      attributes: resultingOptions.attributes
     });
 
     Object.defineProperty(resultingOptions, "toJSON", {
@@ -23,19 +30,27 @@ export function h<O extends object>(source: Source<O>, options?: O, ...children:
 
     let remainingOptions: object = options;
 
-    if (isGetDocumentNode(remainingOptions)) {
+    if (isGetDocumentNodeOptions(remainingOptions)) {
       const { getDocumentNode, ...nextRemainingOptions } = remainingOptions;
       remainingOptions = nextRemainingOptions;
-      resultingOptions[EXPERIMENT_getDocumentNode] = getDocumentNode;
+      resultingOptions.getDocumentNode = getDocumentNode;
     }
 
-    if (isOnBeforeRender(remainingOptions)) {
+    if (isOnBeforeRenderOptions(remainingOptions)) {
       const { onBeforeRender, ...nextRemainingOptions } = remainingOptions;
       remainingOptions = nextRemainingOptions;
-      resultingOptions[EXPERIMENT_onBeforeRender] = onBeforeRender;
+      resultingOptions.onBeforeRender = onBeforeRender;
     }
 
-    resultingOptions[EXPERIMENT_attributes] = remainingOptions;
+    const finalOptions = {
+      attributes: remainingOptions
+    };
+
+    if (isAttributesOptions(finalOptions)) {
+      resultingOptions.attributes = finalOptions.attributes;
+    }
+
+    console.log(source, resultingOptions, finalOptions);
 
     return h(source, resultingOptions, ...children);
   }

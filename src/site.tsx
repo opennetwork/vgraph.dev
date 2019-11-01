@@ -1,7 +1,7 @@
 import { h } from "./h";
 import { VNode } from "@opennetwork/vnode";
 import { SiteContents } from "./contents";
-import { BROWSER, PRIMARY_SCRIPT_SOURCE } from "./environment";
+import { PRIMARY_SCRIPT_SOURCE } from "./environment";
 
 export function SiteHead(): VNode {
   return (
@@ -13,10 +13,10 @@ export function SiteHead(): VNode {
 }
 
 export function SiteBody(): VNode {
-  return (
-    <fragment>
-      <SiteContents />
-      <script src={PRIMARY_SCRIPT_SOURCE} onBeforeRender={console.log} type="module" />
-    </fragment>
-  );
+ return (
+   <fragment>
+     <SiteContents />
+     <script src={PRIMARY_SCRIPT_SOURCE} onBeforeRender={console.log} type="module" />
+   </fragment>
+ );
 }

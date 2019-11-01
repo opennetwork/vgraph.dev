@@ -39,6 +39,11 @@ export function SiteContents() {
         After the button is rendered the component waits for the "onClicked" promise to resolve before it updates the visual state again
       </p>
       <Example runnable="./examples/interactive-button.js" source="/contents/examples/interactive-button.tsx" key="InteractiveButton" wait={5000} />
+      <hr />
+      <p>
+        The next example shows a flag being found within the virtual graph
+      </p>
+      <Example runnable="./examples/flag.js" key="Flag" source="/contents/examples/flag.tsx" wait={5000} />
     </main>
   );
 }

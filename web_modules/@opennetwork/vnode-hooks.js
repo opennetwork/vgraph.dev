@@ -1,24 +1,22 @@
-import { asyncHooks } from '../iterable.js';
+import { isPromise, asyncExtendedIterable } from '../iterable.js';
 
-function hooks(hooks, children) {
-    const hook = hooks ? asyncHooks(hooks) : undefined;
-    const childrenHook = children ? asyncHooks(children) : undefined;
-    return async function* hooked(instance) {
-        if (!hook && !childrenHook) {
-            return instance; // Nothing ever to be done
+function hook(fn) {
+    return async function hookFn(node, parent) {
+        let hooked = fn(node, parent);
+        if (isPromise(hooked)) {
+            hooked = await hooked;
         }
-        for await (const node of (hook ? hook(instance) : instance)) {
-            if (!childrenHook || !node.children) {
-                yield node;
-            }
-            else {
-                yield {
-                    ...node,
-                    children: childrenHook(node.children)
-                };
-            }
+        if (!hooked) {
+            return undefined;
         }
+        if (!hooked.children) {
+            return hooked;
+        }
+        return {
+            ...hooked,
+            children: asyncExtendedIterable(hooked.children).map(children => asyncExtendedIterable(children).map(child => hookFn(child, parent)))
+        };
     };
 }
 
-export { hooks };
+export { hook };

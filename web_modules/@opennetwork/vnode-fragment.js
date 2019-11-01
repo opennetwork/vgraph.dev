@@ -1,6 +1,5 @@
 import { isFragmentVNode, Fragment, isSourceReference } from './vnode.js';
-import { asyncHooks } from '../iterable.js';
-import { hooks } from './vnode-hooks.js';
+import { asyncExtendedIterable } from '../iterable.js';
 
 function isReferencedVNode(given, value) {
     return value.reference === given;
@@ -100,52 +99,36 @@ function isIsolatedFragmentVNode(node) {
         node.source === IsolatedFragment);
 }
 
-function hookFragments() {
-    return hookFragmentsWithDetails([], 0);
-}
-function hookFragmentsWithDetails(fragments = [], depth = 0) {
-    return hooks(fragmentHooks(fragments, depth));
-}
-function fragmentHooks(fragments = [], depth = 0) {
-    return {
-        async yield(node) {
-            if (isMutationFragmentVNode(node) || isReferenceFragmentVNode(node) || isIsolatedFragmentVNode(node)) {
-                if (!node.children) {
-                    // We will never utilise the fragments, so we can ignore them for now
-                    return node;
-                }
-                const nextHook = asyncHooks(fragmentChildrenHooks(fragments.concat({ fragment: node, depth })));
-                return {
-                    ...node,
-                    children: nextHook(node.children)
-                };
+function hookFragments(fragments = [], depth = 0) {
+    return async (node) => {
+        let trackingFragments = fragments, trackingNode = node;
+        if (isMutationFragmentVNode(node) || isReferenceFragmentVNode(node) || isIsolatedFragmentVNode(node)) {
+            if (!node.children) {
+                // We will never utilise the fragments, so we can ignore them for now
+                return node;
             }
-            const nextHook = asyncHooks(fragmentChildrenHooks(fragments));
-            // Do something with our
-            const nextNode = await run(node, fragments);
-            if (!nextNode.children) {
-                return nextNode;
-            }
-            return {
-                ...nextNode,
-                children: nextHook(nextNode.children)
-            };
+            trackingFragments = fragments.concat({ fragment: node, depth });
         }
+        else {
+            trackingNode = await run(node, fragments);
+        }
+        if (!trackingNode.children) {
+            return trackingNode;
+        }
+        const nextHook = hooksFragmentChildren(trackingFragments, depth);
+        return {
+            ...trackingNode,
+            children: nextHook(trackingNode.children)
+        };
     };
 }
-function fragmentChildrenHooks(fragments = [], depth = 0) {
-    let hook;
-    return {
-        yield(children) {
-            if (!hook) {
-                hook = hookFragmentsWithDetails(fragments, depth + 1);
-            }
-            // Will "just work", in this case we have a list of children, rather than updates for the same VNode
-            return hook(children);
-        }
+function hooksFragmentChildren(fragments, depth) {
+    const hook = hookFragments(fragments, depth + 1);
+    return (updates) => {
+        return asyncExtendedIterable(updates).map(children => asyncExtendedIterable(children).map(hook));
     };
 }
-async function run(node, fragments = [], depth) {
+async function run(node, fragments = []) {
     if (!fragments.length) {
         return node;
     }

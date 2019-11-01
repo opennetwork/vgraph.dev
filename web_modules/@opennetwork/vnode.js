@@ -22,7 +22,7 @@ function isSourceReference(value) {
  * `unique symbol` to represent a {@link FragmentVNode}, this will be used on the {@link VNode.reference} property.
  * The {@link FragmentVNode} should be ignored and the {@link VNode.children} values should be used in its place
  */
-const Fragment = Symbol("Fragment");
+const Fragment = Symbol.for("@opennetwork/vnode/fragment");
 
 function isVNodeLike(value) {
     return typeof value === "object";
@@ -32,7 +32,7 @@ function isVNodeLike(value) {
  * @param value
  */
 function isVNode(value) {
-    return (isVNodeLike(value) &&
+    return !!(isVNodeLike(value) &&
         isSourceReference(value.reference) &&
         (!value.children ||
             isAsyncIterable(value.children)) &&
@@ -102,7 +102,7 @@ async function* childrenUnion(childrenGroups) {
         children
     }));
 }
-async function* children(context, ...source) {
+async function* children(createVNode, context, ...source) {
     if (context.children) {
         const result = context.children(source);
         if (result) {
@@ -120,9 +120,9 @@ async function* children(context, ...source) {
         }
         // These need further processing through createVNodeWithContext
         if (isSourceReference(source) || isMarshalledVNode(source) || isIterableIterator(source)) {
-            return yield* eachSource(createVNodeWithContext(context, source));
+            return yield* eachSource(createVNode(context, source));
         }
-        return yield* childrenUnion(asyncExtendedIterable(source).map(source => children(context, source)));
+        return yield* childrenUnion(asyncExtendedIterable(source).map(source => children(createVNode, context, source)));
     }
     if (source.length === 1) {
         return yield* eachSource(source[0]);
@@ -187,13 +187,20 @@ function createVNodeWithContext(context, source, options, ...children$1) {
         };
     }
     /**
+     * If we have a fragment then we want to pass it back through our function so the next
+     * statement is invoked to handle fragments with children
+     */
+    if (source === Fragment) {
+        return createVNodeWithContext(context, { reference: Fragment }, options, ...children$1);
+    }
+    /**
      * This allows fragments to be extended with children
      */
     if (isFragmentVNode(source) && !source.children) {
         // If a fragment has no children then we will attach our children to it
         return {
             ...source,
-            children: children(context, ...children$1)
+            children: children(createVNodeWithContext, context, ...children$1)
         };
     }
     /**
@@ -244,10 +251,10 @@ function createVNodeWithContext(context, source, options, ...children$1) {
      * We will create a `Fragment` that holds our node state to grab later
      */
     if (isIterable(source) || isAsyncIterable(source)) {
-        const childrenInstance = children(context, ...children$1);
+        const childrenInstance = children(createVNodeWithContext, context, ...children$1);
         return {
             reference: Fragment,
-            children: children(context, asyncExtendedIterable(source).map(value => createVNodeWithContext(context, value, options, childrenInstance)))
+            children: children(createVNodeWithContext, context, asyncExtendedIterable(source).map(value => createVNodeWithContext(context, value, options, childrenInstance)))
         };
     }
     /**
@@ -271,14 +278,22 @@ function createVNodeWithContext(context, source, options, ...children$1) {
      * @param reference
      */
     async function* generator(newReference, reference) {
-        const childrenInstance = children(context, ...children$1);
+        const childrenInstance = children(createVNodeWithContext, context, ...children$1);
         let next;
         do {
             next = await getNext(reference, newReference);
-            if (!next.done) {
-                yield asyncIterable([
-                    createVNodeWithContext(context, next.value, options, childrenInstance)
-                ]);
+            if (next.done) {
+                continue;
+            }
+            const node = createVNodeWithContext(context, next.value, options, childrenInstance);
+            if (!isFragmentVNode(node) || !node.children) {
+                // Let it do its thing
+                yield asyncIterable([node]);
+                continue;
+            }
+            // Flatten it out a little as we can match the expected structure
+            for await (const children of node.children) {
+                yield children;
             }
         } while (!next.done);
     }
@@ -291,7 +306,7 @@ function createVNodeWithContext(context, source, options, ...children$1) {
     async function* functionGenerator(source) {
         const nextSource = source(options, {
             reference: Fragment,
-            children: children(context, ...children$1)
+            children: children(createVNodeWithContext, context, ...children$1)
         });
         yield asyncIterable([
             createVNodeWithContext(context, nextSource, options, undefined)
@@ -327,7 +342,7 @@ function createVNodeWithContext(context, source, options, ...children$1) {
             scalar: true,
             source: source,
             options,
-            children: children(context, ...children$1)
+            children: children(createVNodeWithContext, context, ...children$1)
         };
     }
 }
@@ -340,13 +355,17 @@ function getMarshalledReference(context, reference) {
 function getReference(context, options) {
     const fromOptions = getReferenceFromOptions(options);
     const fromContext = context.reference ? context.reference(fromOptions) : fromOptions;
-    return fromContext || Symbol("VNode");
+    return fromContext || Symbol("@opennetwork/vnode");
 }
-function getReferenceFromOptions(options) {
-    function isReferenceOptions(options) {
+function isReferenceOptions(options) {
+    function isReferenceOptionsLike(options) {
         return options && options.hasOwnProperty("reference");
     }
-    if (!(isReferenceOptions(options) && isSourceReference(options.reference))) {
+    return (isReferenceOptionsLike(options) &&
+        isSourceReference(options.reference));
+}
+function getReferenceFromOptions(options) {
+    if (!isReferenceOptions(options)) {
         return undefined;
     }
     return options.reference;
@@ -498,30 +517,24 @@ async function hydrate(context, node, tree) {
  */
 async function marshal(node, parent, getReference) {
     /**
-     * We will use this as a reference counter when we don't have a getReference function
-     *
-     * Each VNode will be assigned the next value after incrementing
-     */
-    let currentReference = 0;
-    /**
-     * Where the key is the parent source reference, and the value is a map of all marshalled references in relation to the reference
-     */
-    const referenceMap = new Map();
-    /**
      * If no parent is passed this will be a process unique reference, meaning we can use it to start off our reference generation
      */
     const rootParent = Symbol("Root");
+    const { reference: currentReference, ...nodeBase } = node;
     /**
      * This will be our marshalled reference for the current node, this will be passed down to children to have a context
      * reference for further reference generation
      */
-    const reference = getReferenceInternal(parent, node.reference);
+    const reference = getReferenceInternal(parent, currentReference);
     const children = await asyncExtendedIterable(node.children || []).map(children => asyncExtendedIterable(children || []).map(child => marshal(child, reference, getReferenceInternal)).toArray()).toArray();
-    return {
-        ...node,
-        reference,
+    const marshalled = {
+        ...nodeBase,
         children
     };
+    if (reference) {
+        marshalled.reference = reference;
+    }
+    return marshalled;
     /**
      * This is a template for `getReference`, something similar would be expected of an implementor of said function,
      * we want a unique reference across each child, children across {@link VNode} values can have the same reference
@@ -532,23 +545,15 @@ async function marshal(node, parent, getReference) {
     function getReferenceInternal(parent, sourceReference) {
         if (getReference) {
             const value = getReference(parent || rootParent, sourceReference);
-            if (!isMarshalledSourceReference(value)) {
+            if (value && !isMarshalledSourceReference(value)) {
                 throw new Error(`getReference returned a value that wasn't string, number, or boolean, which is not expected`);
             }
             return value;
         }
-        let map = referenceMap.get(parent || rootParent);
-        if (!map) {
-            map = new Map();
-            referenceMap.set(parent || rootParent, map);
+        if (typeof sourceReference === "symbol") {
+            return undefined;
         }
-        const current = map.get(sourceReference);
-        if (typeof current === "number") {
-            return current;
-        }
-        const next = currentReference += 1;
-        map.set(sourceReference, currentReference);
-        return next;
+        return sourceReference;
     }
 }
 

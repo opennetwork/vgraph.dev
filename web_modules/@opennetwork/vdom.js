@@ -1,96 +1,149 @@
-import { isNativeVNode, isFragmentVNode, isSourceReference, isScalarVNode, Fragment, isVNode } from './vnode.js';
-import { asyncExtendedIterable, isPromise } from '../iterable.js';
+import { isFragmentVNode, isSourceReference, isScalarVNode, isNativeVNode, Fragment, isVNode } from './vnode.js';
+import { isPromise, asyncExtendedIterable } from '../iterable.js';
 import { directive, NodePart, createMarker, render, noChange, nothing } from '../lit-html.js';
 
-const EXPERIMENT_onBeforeRender = Symbol("onBeforeRender");
-const EXPERIMENT_getDocumentNode = Symbol("getDocumentNode");
-const EXPERIMENT_attributes = Symbol("attributes");
-function isAttributes(options) {
+function isNode(value) {
+    function isNodeLike(value) {
+        return !!value;
+    }
+    return (isNodeLike(value) &&
+        typeof value.nodeType === "number" &&
+        typeof value.TEXT_NODE === "number" &&
+        typeof value.ELEMENT_NODE === "number");
+}
+function isText(node) {
+    return isNode(node) && typeof node.nodeType === "number" && node.nodeType === node.TEXT_NODE;
+}
+function isElement(node) {
+    return isNode(node) && typeof node.nodeType === "number" && node.nodeType === node.ELEMENT_NODE;
+}
+function isExpectedNode(expected, given) {
+    if (!given) {
+        return false;
+    }
+    if (expected.options.type === "Text") {
+        return isText(given);
+    }
+    if (expected.options.type !== "Element") {
+        throw new Error(`Expected Element or Text, received ${expected.options.type}`);
+    }
+    if (!isElement(given)) {
+        return false;
+    }
+    return expected.source === given.localName;
+}
+async function getDocumentNode(root, node) {
+    if (typeof node.options.getDocumentNode === "function") {
+        let result = node.options.getDocumentNode(root, node);
+        if (isPromise(result)) {
+            result = await result;
+        }
+        if (result) {
+            if (!isExpectedNode(node, result)) {
+                if (node.options.type === "Text") {
+                    throw new Error(`Expected getDocumentNode to return a Text node`);
+                }
+                else if (node.options.type === "Element") {
+                    throw new Error(`Expected getDocumentNode to return an Element node with the localName ${node.source}, but didn't receive this`);
+                }
+                else {
+                    throw new Error(`getDocumentNode returned an unexpected node type, expected ${node.options.type}, see https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType`);
+                }
+            }
+            return result;
+        }
+    }
+    if (node.options.type === "Text") {
+        if (isText(node.options.instance)) {
+            return node.options.instance;
+        }
+        return root.ownerDocument.createTextNode(node.source);
+    }
+    if (node.options.type !== "Element") {
+        throw new Error("type must be Text or Element");
+    }
+    if (isElement(node.options.instance)) {
+        return node.options.instance;
+    }
+    if (node.options.whenDefined && root.ownerDocument.defaultView.customElements && root.ownerDocument.defaultView.customElements.whenDefined) {
+        await root.ownerDocument.defaultView.customElements.whenDefined(node.source);
+    }
+    return root.ownerDocument.createElement(node.source, { is: node.options.is });
+}
+
+function isNativeAttributeValue(value) {
+    return (value === undefined ||
+        typeof value === "string" ||
+        typeof value === "boolean" ||
+        typeof value === "number");
+}
+function isNativeAttributesObject(attributes) {
+    if (!attributes) {
+        return false;
+    }
+    const invalidIndex = Object.keys(attributes).findIndex(key => !isNativeAttributeValue(attributes[key]));
+    return invalidIndex === -1;
+}
+function isAttributesOptions(options) {
     function isAttributesLike(options) {
         return !!options;
     }
     return (isAttributesLike(options) &&
-        typeof options.attributes === "object");
+        typeof options.attributes === "object" &&
+        isNativeAttributesObject(options.attributes));
 }
-function isAttributesExperiment(options) {
-    function isAttributesLike(options) {
-        return !!options;
-    }
-    return (isAttributesLike(options) &&
-        typeof options[EXPERIMENT_attributes] === "object");
-}
-function isOnBeforeRender(options) {
+function isOnBeforeRenderOptions(options) {
     function isOnBeforeRenderLike(options) {
         return !!options;
     }
     return (isOnBeforeRenderLike(options) &&
         typeof options.onBeforeRender === "function");
 }
-function isOnBeforeRenderExperiment(options) {
-    function isOnBeforeRenderLike(options) {
-        return !!options;
-    }
-    return (isOnBeforeRenderLike(options) &&
-        typeof options[EXPERIMENT_onBeforeRender] === "function");
-}
-function isGetDocumentNode(options) {
+function isGetDocumentNodeOptions(options) {
     function isGetDocumentNodeLike(options) {
         return !!options;
     }
     return (isGetDocumentNodeLike(options) &&
         typeof options.getDocumentNode === "function");
 }
-function isGetDocumentNodeExperiment(options) {
-    function isGetDocumentNodeLike(options) {
+function isNativeOptions(options) {
+    function isNativeOptionsLike(options) {
         return !!options;
     }
-    return (isGetDocumentNodeLike(options) &&
-        typeof options[EXPERIMENT_getDocumentNode] === "function");
-}
-function isExperimental(options) {
-    function isExperimentalLike(options) {
-        return !!options;
+    function isAttributesOptionsLike(options) {
+        return !!(!options.attributes ||
+            isAttributesOptions(options));
     }
-    return !!(isExperimentalLike(options) &&
-        (options[EXPERIMENT_attributes] ||
-            options[EXPERIMENT_onBeforeRender] ||
-            options[EXPERIMENT_getDocumentNode]));
-}
-
-const HydratedDOMNativeVNodeSymbol = Symbol("Hydrated DOM Native VNode");
-function getHydratedDOMNativeVNode(node) {
-    const nextNode = {
-        ...node,
-        hydrated: true,
-        [HydratedDOMNativeVNodeSymbol]: true
-    };
-    if (!isHydratedDOMNativeVNode(nextNode)) {
-        throw new Error("isHydratedDOMNativeVNode returned false when we expected it to return true");
+    function isOnBeforeRenderOptionsLike(options) {
+        return !!(!options.onBeforeRender ||
+            isOnBeforeRenderOptions(options));
     }
-    return nextNode;
-}
-function isHydratedDOMNativeVNode(node) {
-    function isHydratedDOMNativeVNodeLike(node) {
-        return isDOMNativeVNode(node);
+    function isGetDocumentNodeOptionsLike(options) {
+        return !!(!options.getDocumentNode ||
+            isGetDocumentNodeOptions(options));
     }
-    return (isHydratedDOMNativeVNodeLike(node) &&
-        node[HydratedDOMNativeVNodeSymbol] === true);
-}
-function isDOMNativeVNode(node) {
-    function isDOMNativeVNodeLike(node) {
-        return isNativeVNode(node);
+    function isIsOptionsLike(options) {
+        return !!(options.is === undefined ||
+            isIsOptions(options));
     }
-    return (isDOMNativeVNodeLike(node) &&
-        typeof node.source === "string" &&
-        !!node.options &&
-        typeof node.options.type === "string" &&
-        (node.options.type === "Element" ||
-            node.options.type === "Text") &&
-        (!node.options.is ||
-            isIsOptions(node.options)));
-}
-function isNativeCompatible(vnode) {
-    return !!getNativeOptions(vnode);
+    function isInstanceOptionsLike(options) {
+        return !!(options.instance === undefined ||
+            isElement(options.instance) ||
+            isText(options.instance));
+    }
+    function isWhenDefinedOptionsLike(options) {
+        return !!(typeof options.whenDefined === "boolean" ||
+            options.whenDefined === undefined);
+    }
+    return !!(isNativeOptionsLike(options) &&
+        (options.type === "Element" ||
+            options.type === "Text") &&
+        isAttributesOptionsLike(options) &&
+        isOnBeforeRenderOptionsLike(options) &&
+        isGetDocumentNodeOptionsLike(options) &&
+        isIsOptionsLike(options) &&
+        isInstanceOptionsLike(options) &&
+        isWhenDefinedOptionsLike(options));
 }
 function getNativeOptions(vnode) {
     if (isFragmentVNode(vnode)) {
@@ -116,6 +169,41 @@ function getNativeOptions(vnode) {
         is: isIsOptions(vnode.options) ? vnode.options.is : undefined
     };
 }
+function isIsOptions(options) {
+    function isIsOptionsLike(options) {
+        return !!options;
+    }
+    return (isIsOptionsLike(options) &&
+        typeof options.is === "string");
+}
+
+const HydratedDOMNativeVNodeSymbol = Symbol("Hydrated DOM Native VNode");
+function getHydratedDOMNativeVNode(node) {
+    const nextNode = {
+        ...node,
+        hydrated: true,
+        [HydratedDOMNativeVNodeSymbol]: true
+    };
+    if (!isHydratedDOMNativeVNode(nextNode)) {
+        throw new Error("isHydratedDOMNativeVNode returned false when we expected it to return true");
+    }
+    return nextNode;
+}
+function isHydratedDOMNativeVNode(node) {
+    function isHydratedDOMNativeVNodeLike(node) {
+        return isDOMNativeVNode(node);
+    }
+    return (isHydratedDOMNativeVNodeLike(node) &&
+        node[HydratedDOMNativeVNodeSymbol] === true);
+}
+function isDOMNativeVNode(node) {
+    return (isNativeVNode(node) &&
+        typeof node.source === "string" &&
+        isNativeOptions(node.options));
+}
+function isNativeCompatible(vnode) {
+    return !!getNativeOptions(vnode);
+}
 function native(options, children) {
     const nativeOptions = getNativeOptions(children);
     if (!nativeOptions) {
@@ -124,20 +212,13 @@ function native(options, children) {
     else {
         return {
             source: String(children.source),
-            reference: children.reference || Symbol("DOM Native"),
+            reference: children.reference || Symbol("@opennetwork/vdom/native"),
             native: true,
             options: nativeOptions,
             // We're going to git these children a few times, so we want to retain our values
             children: asyncExtendedIterable(children.children).retain()
         };
     }
-}
-function isIsOptions(options) {
-    function isIsOptionsLike(options) {
-        return !!options;
-    }
-    return (isIsOptionsLike(options) &&
-        typeof options.is === "string");
 }
 
 function produce(node) {
@@ -150,11 +231,14 @@ function produce(node) {
     else if (isNativeCompatible(node)) {
         return produce(native(undefined, node));
     }
-    else {
+    else if (node && node.children) {
         return {
             reference: Fragment,
             children: produceChildren(node)
         };
+    }
+    else {
+        return { reference: Fragment };
     }
 }
 async function* produceChildren(node) {
@@ -270,78 +354,9 @@ const asyncAppend = directive((value, mapper) => async (part) => {
     }
 });
 
-function isNode(value) {
-    function isNodeLike(value) {
-        return !!value;
-    }
-    return (isNodeLike(value) &&
-        typeof value.nodeType === "number" &&
-        typeof value.TEXT_NODE === "number" &&
-        typeof value.ELEMENT_NODE === "number");
-}
-function isText(node) {
-    return isNode(node) && typeof node.nodeType === "number" && node.nodeType === node.TEXT_NODE;
-}
-function isElement(node) {
-    return isNode(node) && typeof node.nodeType === "number" && node.nodeType === node.ELEMENT_NODE;
-}
-function isExpectedNode(expected, given) {
-    if (!given) {
-        return false;
-    }
-    if (expected.options.type === "Text") {
-        return isText(given);
-    }
-    if (expected.options.type !== "Element") {
-        throw new Error(`Expected Element or Text, received ${expected.options.type}`);
-    }
-    if (!isElement(given)) {
-        return false;
-    }
-    return expected.source === given.localName;
-}
-async function getDocumentNode(root, node) {
-    if (typeof node.options[EXPERIMENT_getDocumentNode] === "function") {
-        let result = node.options[EXPERIMENT_getDocumentNode](root, node);
-        if (isPromise(result)) {
-            result = await result;
-        }
-        if (result) {
-            if (!isExpectedNode(node, result)) {
-                if (node.options.type === "Text") {
-                    throw new Error(`Expected getDocumentNode to return a Text node`);
-                }
-                else if (node.options.type === "Element") {
-                    throw new Error(`Expected getDocumentNode to return an Element node with the localName ${node.source}, but didn't receive this`);
-                }
-                else {
-                    throw new Error(`getDocumentNode returned an unexpected node type, expected ${node.options.type}, see https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType`);
-                }
-            }
-            return result;
-        }
-    }
-    if (node.options.type === "Text") {
-        if (isText(node.options.instance)) {
-            return node.options.instance;
-        }
-        return root.ownerDocument.createTextNode(node.source);
-    }
-    if (node.options.type !== "Element") {
-        throw new Error("type must be Text or Element");
-    }
-    if (isElement(node.options.instance)) {
-        return node.options.instance;
-    }
-    if (node.options.whenDefined && root.ownerDocument.defaultView.customElements && root.ownerDocument.defaultView.customElements.whenDefined) {
-        await root.ownerDocument.defaultView.customElements.whenDefined(node.source);
-    }
-    return root.ownerDocument.createElement(node.source, { is: node.options.is });
-}
-
 function setAttributes(node, documentNode) {
-    const attributes = node.options[EXPERIMENT_attributes];
-    if (!attributes) {
+    const attributes = node.options.attributes;
+    if (!isNativeAttributesObject(attributes)) {
         return;
     }
     const keys = Object.keys(attributes);
@@ -353,19 +368,28 @@ function setAttributes(node, documentNode) {
     if (duplicates.length) {
         throw new Error(`Duplicate keys found for ${duplicates.join(", ")}, this will lead to unexpected behaviour, and is not supported`);
     }
+    const toRemove = [];
     // Don't use lower keys here as we need to access attributes
     keys.forEach(key => {
-        documentNode.setAttribute(key, attributes[key]);
+        const value = attributes[key];
+        if (value === undefined || value === false) {
+            toRemove.push(key);
+        }
+        else if (value === true) {
+            documentNode.setAttribute(key, "");
+        }
+        else {
+            documentNode.setAttribute(key, String(attributes[key]));
+        }
     });
     const attributesLength = documentNode.attributes.length;
     // Assume we set all of these attributes, and don't need to check further if there
-    if (attributesLength === keys.length) {
+    if (attributesLength === keys.length && toRemove.length === 0) {
         return;
     }
-    const toRemove = [];
     for (let attributeIndex = 0; attributeIndex < attributesLength; attributeIndex += 1) {
         const attribute = documentNode.attributes.item(attributeIndex);
-        if (lowerKeys.includes(attribute.name)) {
+        if (lowerKeys.includes(attribute.name.toLowerCase())) {
             continue;
         }
         toRemove.push(attribute.name);
@@ -373,7 +397,7 @@ function setAttributes(node, documentNode) {
     toRemove.forEach(key => documentNode.removeAttribute(key));
 }
 
-function isWithPromiseContext(value) {
+function isLitWithPromiseContext(value) {
     function isWithPromiseContextLike(value) {
         return !!value;
     }
@@ -381,13 +405,14 @@ function isWithPromiseContext(value) {
         value.context &&
         Array.isArray(value.within));
 }
-class AsyncContext {
+class LitContext {
     constructor() {
         this.promises = [];
+        this.documentNodes = new WeakMap();
     }
     pushPromise(promise, context) {
         const newPromise = !context ? promise : promise.catch(error => {
-            if (isWithPromiseContext(error)) {
+            if (isLitWithPromiseContext(error)) {
                 // Re-throw, it has the original info
                 error.within.push(context);
                 throw error;
@@ -410,78 +435,103 @@ class AsyncContext {
         } while (this.promises.length);
     }
 }
-async function litRender(initialNode, container) {
+
+function litRender(initialNode, container) {
     if (!initialNode) {
-        return;
+        return Promise.resolve();
     }
-    const asyncContext = new AsyncContext();
+    const context = new LitContext();
     const produced = produce(initialNode);
-    const documentNodes = new WeakMap();
-    if (isFragmentVNode(produced)) {
-        render(fragment(container, produced, asyncContext, documentNodes), container);
-    }
-    else if (isHydratedDOMNativeVNode(produced)) {
-        render(node(container, produced, asyncContext, documentNodes), container);
-    }
-    await asyncContext.flush();
+    render(node(container, produced, context), container);
+    return context.flush();
 }
-function fragment(container, produced, asyncContext, documentNodes) {
+function fragment(container, produced, context) {
     let previousPromise = undefined;
-    return asyncReplace(produced.children, async (children, index, asyncContext) => {
+    return asyncReplace(produced.children, async (children, context) => {
         if (previousPromise) {
             await previousPromise;
             previousPromise = undefined;
         }
-        return wrapAsyncDirective(asyncAppend, asyncContext, nextPromise => previousPromise = nextPromise, { node: produced, from: "asyncAppend" })(children, child => {
+        return wrapAsyncDirective(asyncAppend, context, nextPromise => previousPromise = nextPromise, { node: produced, from: "asyncAppend" })(children, child => {
             if (!isVNode(child)) {
                 return nothing;
             }
-            if (isFragmentVNode(child)) {
-                return fragment(container, child, asyncContext, documentNodes);
-            }
-            else if (isHydratedDOMNativeVNode(child)) {
-                return node(container, child, asyncContext, documentNodes);
-            }
-            else {
-                return nothing;
-            }
+            return node(container, child, context);
         });
-    }, asyncContext);
+    }, context);
 }
-function node(root, node, context, documentNodes) {
-    return wrapAsyncDirective(directive(() => part => run(part)), context)();
-    async function run(part) {
-        const documentNode = await getNode();
+function node(root, node, context) {
+    if (isFragmentVNode(node)) {
+        return fragment(root, node, context);
+    }
+    if (!isHydratedDOMNativeVNode(node)) {
+        return nothing;
+    }
+    return wrapAsyncDirective(directive(() => part => run(node, part)), context)();
+    function isPartValueExpectedNode(node, part) {
+        return part.value && (isElement(part.value) || isText(part.value)) && isExpectedNode(node, part.value);
+    }
+    async function run(node, part) {
+        let documentNode;
+        // Only if getDocumentNode is not available will be check if it is already correct
+        // this is because getDocumentNode can have side-effects of its own before we know about it
+        if (!node.options.getDocumentNode && isPartValueExpectedNode(node, part)) {
+            documentNode = part.value;
+        }
+        else {
+            documentNode = await getNode(node);
+        }
         if (isElement(documentNode)) {
             // Set attributes here, this will mean by the time we get to commit, it will change the attributes
             //
             // If this isn't the first time this document node was rendered, it will be changing a live DOM node
             setAttributes(node, documentNode);
         }
-        if (node.options[EXPERIMENT_onBeforeRender]) {
-            // This happens _before_ mount, it only provides a way
-            const result = node.options[EXPERIMENT_onBeforeRender](documentNode);
+        if (node.options.onBeforeRender) {
+            // This happens _before_ mount, it only provides a way to grab onto that node
+            const result = node.options.onBeforeRender(documentNode);
             if (isPromise(result)) {
                 await result;
             }
         }
         part.setValue(documentNode);
         part.commit();
-        if (!isElement(documentNode) || !node.children) {
-            return;
+        if (node.options.onConnected) {
+            const result = node.options.onConnected(documentNode);
+            if (isPromise(result)) {
+                await result;
+            }
         }
-        context.pushPromise(litRender({ reference: Fragment, children: node.children }, documentNode), { node, from: "child render" });
+        const onRendered = async () => {
+            if (node.options.onRendered) {
+                const result = node.options.onRendered(documentNode);
+                if (isPromise(result)) {
+                    await result;
+                }
+            }
+        };
+        if (isElement(documentNode) && node.children) {
+            const promise = litRender({ reference: Fragment, children: node.children }, documentNode).then(onRendered);
+            context.pushPromise(promise, { node, from: "child render" });
+        }
+        else {
+            await onRendered();
+        }
+        return documentNode;
     }
-    async function getNode() {
+    async function getNode(node) {
         // Node is checked directly, but it needs to be in the global scope for this to work
         // https://github.com/Polymer/lit-html/blob/master/src/lib/parts.ts#L310
-        const currentDocumentNode = documentNodes.get(node);
-        if (currentDocumentNode) {
+        const currentDocumentNode = context.documentNodes.get(node);
+        // Only if the parentNode is the current root will we utilise the known element
+        if (currentDocumentNode && currentDocumentNode.parentElement === root) {
             // We already had one for this object, so retain and use again
             return currentDocumentNode;
         }
+        // Remove while we generate
+        context.documentNodes.delete(node);
         const documentNode = await getDocumentNode(root, node);
-        documentNodes.set(node, documentNode);
+        context.documentNodes.set(node, documentNode);
         return documentNode;
     }
 }
@@ -508,19 +558,19 @@ const asyncReplace = directive((value, mapper, givenContext) => (part) => {
     givenContext.pushPromise(run());
     async function run() {
         if (!(part instanceof NodePart)) {
-            throw new Error("asyncReplace can only be used in text bindings");
+            throw new Error("Expected NodePart");
         }
         // If we've already set up this particular iterable, we don't need
         // to do anything.
         if (value === part.value) {
             return;
         }
-        const context = new AsyncContext();
+        const context = new LitContext();
         // We nest a new part to keep track of previous item values separately
         // of the iterable as a value itself.
         const itemPart = new NodePart(part.options);
         part.value = value;
-        let i = 0;
+        let cleared = false;
         for await (let v of value) {
             // Check to make sure that value is the still the current value of
             // the part, and if not bail because a new value owns this part
@@ -529,20 +579,20 @@ const asyncReplace = directive((value, mapper, givenContext) => (part) => {
             }
             // When we get the first value, clear the part. This let's the
             // previous value display until we can replace it.
-            if (i === 0) {
+            if (!cleared) {
                 part.clear();
                 itemPart.appendIntoPart(part);
+                cleared = true;
             }
             if (mapper !== undefined) {
-                v = await mapper(v, i, context);
+                v = await mapper(v, context);
             }
             itemPart.setValue(v);
             itemPart.commit();
-            i++;
             // Wait for this context to be ready for the next render
             await context.flush();
         }
     }
 });
 
-export { EXPERIMENT_attributes, EXPERIMENT_getDocumentNode, EXPERIMENT_onBeforeRender, getHydratedDOMNativeVNode, isAttributes, isAttributesExperiment, isDOMNativeVNode, isExperimental, isGetDocumentNode, isGetDocumentNodeExperiment, isHydratedDOMNativeVNode, isNativeCompatible, isOnBeforeRender, isOnBeforeRenderExperiment, litRender, native };
+export { getHydratedDOMNativeVNode, getNativeOptions, isAttributesOptions, isDOMNativeVNode, isGetDocumentNodeOptions, isHydratedDOMNativeVNode, isNativeAttributeValue, isNativeAttributesObject, isNativeCompatible, isNativeOptions, isOnBeforeRenderOptions, litRender, native };
