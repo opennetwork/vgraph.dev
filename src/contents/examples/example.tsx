@@ -1,4 +1,4 @@
-import { h } from "../h";
+import { h } from "../../h";
 import { RunExample, RunExampleOptions } from "./run-example";
 import { DisplayExample, DisplayExampleOptions } from "./display-example";
 

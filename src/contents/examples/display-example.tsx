@@ -1,5 +1,5 @@
-import { h } from "../h";
-import { BROWSER } from "../environment";
+import { h } from "../../h";
+import { BROWSER } from "../../environment";
 
 export type DisplayExampleOptions = {
   source: string;

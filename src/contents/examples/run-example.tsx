@@ -1,6 +1,6 @@
-import { h } from "../h";
-import { BROWSER } from "../environment";
-import { defer } from "./defer";
+import { h } from "../../h";
+import { BROWSER } from "../../environment";
+import { defer } from "../defer";
 
 export type RunExampleOptions = {
   runnable: string;

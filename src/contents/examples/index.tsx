@@ -1,5 +1,5 @@
 import { h } from "../../h";
-import { Example } from "../example";
+import { Example } from "./example";
 
 export function ExampleContents() {
   return (
