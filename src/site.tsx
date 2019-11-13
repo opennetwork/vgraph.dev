@@ -17,6 +17,14 @@ export function SiteBody(): VNode {
    <fragment>
      <SiteContents />
      <script src={PRIMARY_SCRIPT_SOURCE} onBeforeRender={console.log} type="module" />
+     <script nomodule="" type="application/javascript">
+        const warningMessage = document.createElement("div");
+        warningMessage.setAttribute("role", "alert");
+        warningMessage.setAttribute("aria-live", "assertive");
+        warningMessage.className = "esm-warning";
+        warningMessage.textContent = "This website uses a new JavaScript module standard which your browser does not support, some content may not be responsive on this page.";
+        document.body.insertBefore(warningMessage, document.body.firstChild);
+     </script>
    </fragment>
  );
 }
