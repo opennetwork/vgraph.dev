@@ -1,26 +1,15 @@
 import { h } from "../../h";
 import { BROWSER } from "../../environment";
-import { source, asyncExtendedIterable, asyncHooks } from "iterable";
+import { createPreference } from "../../preference";
+import { string } from "io-ts";
 
+export const SourceTypes = ["jsx", "tsx", "js"];
 export type SourceType = "jsx" | "tsx" | "js";
+export function isSourceType(value: unknown): value is SourceType {
+  return typeof value === "string" && (SourceTypes as string[]).includes(value);
+}
 
-const typePreference = source<SourceType>();
-typePreference.hold();
-
-const typePreferenceTriggered = new WeakMap();
-
-const typePreferenceTrigger = asyncHooks({
-  next: async (iterator: AsyncIterator<SourceType>): Promise<IteratorResult<SourceType>> => {
-    if (typePreferenceTriggered.has(iterator)) {
-      return iterator.next();
-    }
-    typePreferenceTriggered.set(iterator, true);
-    return {
-      done: false,
-      value: "jsx"
-    };
-  }
-});
+const [type, updateType] = createPreference<SourceType>("jsx", "display-examples-as", isSourceType);
 
 export type DisplayExampleOptions = {
   source: string;
@@ -31,8 +20,6 @@ export async function *DisplayExample({ source: name }: DisplayExampleOptions) {
   if (!BROWSER) {
     return;
   }
-  const type = source(typePreference);
-  type.hold();
   yield (
     <div class="code-example">
       <div class="code-actions">
@@ -52,24 +39,23 @@ export async function *DisplayExample({ source: name }: DisplayExampleOptions) {
 
   function onBeforeRenderTypePreference(type: SourceType, element: HTMLElement) {
     element.addEventListener("click", () => {
-      typePreference.push(type);
+      updateType(type);
     });
   }
 
   async function *Code() {
-    yield *asyncExtendedIterable(typePreferenceTrigger(type))
-        .map(
-          async (type) => {
-            const response = await fetch(`/contents/examples/${name}.${type}`);
-            const text = await response.text();
-            return (
-              <pre>
-                <code>
-                  {text.trim()}
-                </code>
-              </pre>
-            );
-          }
+    yield *type().map(
+      async (currentType) => {
+        const response = await fetch(`/contents/examples/${name}.${currentType}`);
+        const text = await response.text();
+        return (
+          <pre>
+            <code>
+              {text.trim()}
+            </code>
+          </pre>
         );
+      }
+    );
   }
 }

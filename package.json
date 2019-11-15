@@ -18,9 +18,12 @@
     "@opennetwork/vnode": "^15.2.0",
     "@opennetwork/vnode-fragment": "^5.0.0",
     "@opennetwork/vnode-hooks": "^5.1.0",
+    "fp-ts": "^2.1.2",
     "htm": "^2.2.1",
+    "io-ts": "^2.0.1",
     "iterable": "^5.6.0",
-    "lit-html": "^1.1.2"
+    "lit-html": "^1.1.2",
+    "tsdef": "^0.0.13"
   },
   "repository": {
     "type": "git",
