@@ -3,7 +3,7 @@ import { h } from "../../h";
 import { on } from "@opennetwork/vnode-fragment";
 import { VNode } from "@opennetwork/vnode";
 
-export async function *Flag() {
+export default async function *Flag() {
   const flag = Symbol("Our flag");
   let found = false;
 

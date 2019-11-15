@@ -1,5 +1,5 @@
 import { h } from "../../h";
 
-export function SingleRender() {
+export default function SingleRender() {
   return <fragment>Single render example</fragment>;
 }

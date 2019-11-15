@@ -1,7 +1,7 @@
 import { defer } from "../defer";
 import { h } from "../../h";
 
-export async function *InteractiveButton() {
+export default async function *InteractiveButton() {
   const { resolve: click, promise: onClicked } = defer();
   yield (
     <button
