@@ -9,7 +9,7 @@ export function isSourceType(value: unknown): value is SourceType {
   return typeof value === "string" && (SourceTypes as string[]).includes(value);
 }
 
-const [type, updateType] = createPreference<SourceType>("jsx", "display-examples-as", isSourceType);
+const [type, updateType] = createPreference<SourceType>("tsx", "display-examples-as", isSourceType);
 
 export type DisplayExampleOptions = {
   source: string;

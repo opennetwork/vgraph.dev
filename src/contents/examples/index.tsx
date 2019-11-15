@@ -40,6 +40,11 @@ export function ExampleContents() {
         The next example shows a flag being found within the virtual graph
       </p>
       <Example source="flag" wait={5000} />
+      <h3>Preference</h3>
+      <p>
+        The next example shows a preference being defined that can be utilised within a component.
+      </p>
+      <Example source="user-preference" wait={5000} />
     </fragment>
   );
 }
