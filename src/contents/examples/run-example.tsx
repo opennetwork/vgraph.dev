@@ -4,11 +4,10 @@ import { defer } from "../defer";
 
 export type RunExampleOptions = {
   runnable: string;
-  key: string;
   wait?: number;
 };
 
-export function RunExample({ runnable, key, wait }: RunExampleOptions) {
+export function RunExample({ runnable, wait }: RunExampleOptions) {
 
   return (
     <div class="run-example">
@@ -25,7 +24,7 @@ export function RunExample({ runnable, key, wait }: RunExampleOptions) {
     await onStart;
     yield <p>Loading example</p>;
     const imported = await import(runnable);
-    const Component = imported[key];
+    const Component = imported.default;
     yield <Run />;
 
     async function *Run() {
