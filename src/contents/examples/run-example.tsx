@@ -7,7 +7,7 @@ export type RunExampleOptions = {
   wait?: number;
 };
 
-export default function RunExample({ runnable, wait }: RunExampleOptions) {
+export function RunExample({ runnable, wait }: RunExampleOptions) {
 
   return (
     <div class="run-example">
