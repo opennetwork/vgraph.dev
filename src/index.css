@@ -20,14 +20,13 @@ main {
 }
 
 button {
-  min-height: 40px;
-  min-width: 40px;
   padding: 15px 10px;
   font-size: inherit;
-  cursor: pointer;
 }
 
-a {
+a, button {
+  min-height: 48px;
+  min-width: 48px;
   cursor: pointer;
 }
 
