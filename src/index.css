@@ -82,7 +82,7 @@ button {
   z-index: 10;
 }
 
-.code-example [role="tablist"] button[aria-selected] {
+.code-example [role="tablist"] button[aria-selected="true"] {
   background-color: #222222;
   color: white;
 }
