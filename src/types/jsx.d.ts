@@ -8,7 +8,7 @@ declare namespace JSX {
   }
 
   interface HTMLElementAttributes extends HTMLAriaAttributes {
-    [key: string]: string | Function;
+    [key: string]: string | number | boolean | Function;
     class?: string;
     accesskey?: string;
     contenteditable?: BooleanAttribute;
@@ -16,14 +16,14 @@ declare namespace JSX {
     dir?: "rtl" | "ltr" | "auto";
     draggable?: string;
     dropzone?: string;
-    hidden?: string;
+    hidden?: string | boolean;
     id?: string;
     itemprop?: string;
     lang?: string;
     slot?: string;
     spellcheck?: string;
     style?: string;
-    tabindex?: string;
+    tabindex?: string | number;
     title?: string;
     translate?: string;
 
