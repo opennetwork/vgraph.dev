@@ -3128,10 +3128,15 @@ isstream@~0.1.2:
   resolved "https://registry.npmjs.org/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
   integrity sha1-R+Y/evVa+m+S4VAOaQ64uFKcCZo=
 
-iterable@^5.2.2, iterable@^5.6.0:
+iterable@^5.2.2:
   version "5.6.0"
   resolved "https://registry.npmjs.org/iterable/-/iterable-5.6.0.tgz#80aa402abaa29938ee267e559359b063d7ef2c00"
   integrity sha512-whfeKvr+YUAI3oZsJpfTfTSGJpNT8xEvaj8o6tE2kT71fP5+gplNu6baVnUPiWcc1OYNc0ORG23B5lAt1PXNxw==
+
+iterable@^5.7.0:
+  version "5.7.0"
+  resolved "https://registry.npmjs.org/iterable/-/iterable-5.7.0.tgz#6937296d3380c227f55fd5ca299e41a821d573f7"
+  integrity sha512-xLERMG+ha4eAxSkms2iaJbjFW5V2uB8vFZVq6Kh+YwPax29IwMTdOIOoieeXOu6+nV0+xe82i2H346RLvsyigA==
 
 js-beautify@^1.8.9:
   version "1.10.2"

@@ -1,7 +1,8 @@
 import { asyncHooks, source, asyncExtendedIterable, ExtendedAsyncIterable } from "iterable";
 import { Is } from "io-ts";
+import { BROWSER } from "./environment";
 
-export function createPreference<T>(defaultValue: T, name?: string, is?: Is<T>, onRetrieveFailure?: (error?: unknown) => void, onStoreFailure?: (value: T, error?: unknown) => void): [() => ExtendedAsyncIterable<T>, (value: T) => void] {
+export function createContext<T>(defaultValue: T, name?: string, is?: Is<T>, onRetrieveFailure?: (error?: unknown) => void, onStoreFailure?: (value: T, error?: unknown) => void): [() => ExtendedAsyncIterable<T>, (value: T) => void] {
   let currentValue: T = defaultValue;
 
   // If `name` isn't provided, we aren't using storage
@@ -40,7 +41,13 @@ export function createPreference<T>(defaultValue: T, name?: string, is?: Is<T>, 
 
   return [
     () => {
-      return asyncExtendedIterable(preferenceTrigger(preference));
+      const iterable = asyncExtendedIterable(preferenceTrigger(preference));
+      if (BROWSER) {
+        return iterable;
+      }
+      // Take only the default value
+      // context values should only change when user interacts with it
+      return iterable.toTuple(1);
     },
     (value) => {
       currentValue = value;

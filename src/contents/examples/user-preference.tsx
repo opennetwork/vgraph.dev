@@ -1,11 +1,11 @@
 import { h } from "../../h";
-import { createPreference } from "../../preference";
+import { createContext } from "../../context";
 
 export interface User {
   type: "Authenticated" | "Anonymous";
 }
 
-export const [user, updateUser] = createPreference<User>({ type: "Anonymous" });
+export const [user, updateUser] = createContext<User>({ type: "Anonymous" });
 
 
 export default function UserPreference() {

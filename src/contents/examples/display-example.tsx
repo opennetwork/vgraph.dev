@@ -1,6 +1,6 @@
 import { h } from "../../h";
 import { BROWSER } from "../../environment";
-import { createPreference } from "../../preference";
+import { createContext } from "../../context";
 import { string } from "io-ts";
 
 export const SourceTypes: SourceType[] = ["jsx", "tsx", "js"];
@@ -15,18 +15,14 @@ export function isSourceType(value: unknown): value is SourceType {
   return typeof value === "string" && (SourceTypes as string[]).includes(value);
 }
 
-const [type, updateType] = createPreference<SourceType>("tsx", "display-examples-as", isSourceType);
+const [type, updateType] = createContext<SourceType>("tsx", "display-examples-as", isSourceType);
 
 export type DisplayExampleOptions = {
   source: string;
 };
 
-export async function *DisplayExample({ source: name }: DisplayExampleOptions) {
-  yield <p>Loading example</p>;
-  if (!BROWSER) {
-    return;
-  }
-  yield (
+export function DisplayExample({ source: name }: DisplayExampleOptions) {
+  return (
     <div class="code-example">
       <div class="code-actions" role="tablist">
         <TabListContents />
@@ -40,6 +36,9 @@ export async function *DisplayExample({ source: name }: DisplayExampleOptions) {
   );
 
   function onBeforeRenderTypePreference(type: SourceType, element: Element) {
+    if (!BROWSER) {
+      return;
+    }
     element.addEventListener("click", () => {
       updateType(type);
     });
@@ -87,12 +86,15 @@ export async function *DisplayExample({ source: name }: DisplayExampleOptions) {
   }
 
   async function Code({ type }: { type: SourceType }) {
+    if (!BROWSER) {
+      return undefined;
+    }
     const response = await fetch(`/contents/examples/${name}.${type}`);
     const text = await response.text();
     return (
       <pre>
         <code>
-          {text.trim()}
+          {text.replace(/(^\/\/.+$)/gm, "").trim()}
         </code>
       </pre>
     );

@@ -1048,7 +1048,7 @@ function* takeMinimum(iterable, count) {
         yield next.value;
     }
     do {
-        const next = iterator.next();
+        next = iterator.next();
         if (next.done) {
             break;
         }
@@ -1074,7 +1074,7 @@ async function* asyncTakeMinimum(iterable, count) {
         yield next.value;
     }
     do {
-        const next = await iterator.next();
+        next = await iterator.next();
         if (next.done) {
             break;
         }

@@ -4,8 +4,11 @@
     "@opennetwork/vnode": "./@opennetwork/vnode.js",
     "@opennetwork/vnode-fragment": "./@opennetwork/vnode-fragment.js",
     "@opennetwork/vnode-hooks": "./@opennetwork/vnode-hooks.js",
+    "fp-ts": "./fp-ts.js",
     "htm": "./htm.js",
+    "io-ts": "./io-ts.js",
     "iterable": "./iterable.js",
-    "lit-html": "./lit-html.js"
+    "lit-html": "./lit-html.js",
+    "tsdef": "./tsdef.js"
   }
 }

@@ -1,6 +1,6 @@
 import { isFragmentVNode, isSourceReference, isScalarVNode, isNativeVNode, Fragment, isVNode } from './vnode.js';
-import { isPromise, asyncExtendedIterable } from '../iterable.js';
 import { directive, NodePart, createMarker, render, noChange, nothing } from '../lit-html.js';
+import { isPromise, asyncExtendedIterable } from '../iterable.js';
 
 function isNode(value) {
     function isNodeLike(value) {
