@@ -5,6 +5,7 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
+    "prepare": "pika install",
     "build": "rm -rf dist && npm run tslint && npm run build:nofus",
     "build:nofus": "mkdir dist && cp -r ./src/* ./dist && cp -r web_modules ./dist/web_modules && tsc --declaration --jsx preserve && tsc --declaration && node -r esm ./generate-site.js && node -r esm correct-import-extensions.js&& cp ./browser-environment.js ./dist/environment.js",
     "watch": "tsc -w",
@@ -35,6 +36,7 @@
     "@babel/plugin-proposal-async-generator-functions": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/runtime": "^7.6.2",
+    "@pika/web": "^0.6.1",
     "@types/jsdom": "^12.2.4",
     "babel-plugin-htm": "^2.2.0",
     "concurrently": "^4.1.2",
