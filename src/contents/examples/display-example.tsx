@@ -70,7 +70,7 @@ export function DisplayExample({ source: name }: DisplayExampleOptions) {
                 <button
                   role="tab"
                   type="button"
-                  aria-selected={currentType === displayType}
+                  aria-selected={(currentType === displayType).toString()}
                   id={`${name}-${displayType}-tab-button`}
                   aria-controls={`${name}-${displayType}-tab`}
                   onBeforeRender={element => onBeforeRenderTypePreference(displayType, element)}
