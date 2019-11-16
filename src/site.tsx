@@ -8,6 +8,7 @@ export function SiteHead(): VNode {
     <fragment>
       <title>VGraph</title>
       <link href="index.css" rel="stylesheet" type="text/css" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
     </fragment>
   );
 }

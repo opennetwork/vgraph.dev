@@ -24,6 +24,11 @@ button {
   min-width: 40px;
   padding: 15px 10px;
   font-size: inherit;
+  cursor: pointer;
+}
+
+a {
+  cursor: pointer;
 }
 
 .esm-warning {

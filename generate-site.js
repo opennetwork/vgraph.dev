@@ -10,10 +10,7 @@ async function generate() {
     litRender(SiteHead(), dom.window.document.head),
     litRender(await hookFragments()(SiteBody()), dom.window.document.body)
   ]);
-
-  clean(dom);
   const html = dom.serialize();
-  console.log(html);
   await promisify(writeFile)("./dist/index.html", html);
 }
 
