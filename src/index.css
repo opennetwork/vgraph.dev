@@ -1,11 +1,10 @@
 body {
   font-family: Helvetica, Arial, sans-serif;
+  color: black;
 }
 
 pre {
   border-radius: 4px;
-  color: white;
-  background: #222222;
   padding: 10px;
 }
 
@@ -20,7 +19,74 @@ main {
   max-width: 40rem;
 }
 
+button {
+  min-height: 40px;
+  min-width: 40px;
+  padding: 15px 10px;
+  font-size: inherit;
+}
+
 .esm-warning {
   margin: 0 auto;
   max-width: 40rem;
+}
+
+.code-example {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  color: white;
+  background: #222222;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.code-example pre {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  overflow-x: scroll;
+}
+
+.code-example [role="tablist"] {
+  color: black;
+  border: 1px solid #222222;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: stretch;
+  background: white;
+}
+
+.code-example [role="tablist"] button {
+  border-radius: 0;
+  border: none;
+  z-index: 9;
+  flex: 1;
+  border-left: 1px solid #222222;
+}
+
+.code-example [role="tablist"] button:first-child {
+  border-left: none;
+  border-top-left-radius: 0;
+}
+
+.code-example [role="tablist"] button:last-child {
+  border-top-right-radius: 0;
+}
+
+.code-example [role="tablist"] button:focus {
+  z-index: 10;
+}
+
+.code-example [role="tablist"] button[aria-selected] {
+  background-color: #222222;
+  color: white;
+}
+
+.code-example [role="tablist"] label {
+  margin-right: 10px;
 }

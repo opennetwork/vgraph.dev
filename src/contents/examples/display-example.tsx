@@ -49,7 +49,7 @@ export async function *DisplayExample({ source: name }: DisplayExampleOptions) {
     yield* type().map(
       currentType => (
         <div
-          tabindex={SourceTypes.indexOf(displayType)}
+          tabindex="0"
           role="tabpanel"
           id={`${name}-${displayType}-tab`}
           aria-labelledby={`${name}-${displayType}-tab-button`}
@@ -74,10 +74,9 @@ export async function *DisplayExample({ source: name }: DisplayExampleOptions) {
                   aria-selected={currentType === displayType}
                   id={`${name}-${displayType}-tab-button`}
                   aria-controls={`${name}-${displayType}-tab`}
-                  title={SourceTypesDisplayTitles[displayType]}
                   onBeforeRender={element => onBeforeRenderTypePreference(displayType, element)}
                 >
-                  {displayType}
+                  {SourceTypesDisplayTitles[displayType]}
                 </button>
               )
             )
