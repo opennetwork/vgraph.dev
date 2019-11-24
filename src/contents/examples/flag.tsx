@@ -13,7 +13,7 @@ export default async function *Flag() {
     <Run />
   );
 
-  yield <fragment>Did we find our value: {flag ? "Yes" : "No"}</fragment>;
+  yield <fragment>Did we find our value: {found ? "Yes" : "No"}</fragment>;
 
   async function *Run() {
     const { resolve: click, promise: onClicked } = defer();
