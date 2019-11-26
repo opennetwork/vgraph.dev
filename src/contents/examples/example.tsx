@@ -7,8 +7,8 @@ export type ExampleOptions = {
   wait?: number;
 };
 
-export async function *Example({ source, wait }: ExampleOptions) {
-  yield (
+export function Example({ source, wait }: ExampleOptions) {
+  return (
     <fragment>
       <DisplayExample source={source} />
       <RunExample runnable={`./${source}.js`} wait={wait} />
