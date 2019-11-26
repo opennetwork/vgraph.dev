@@ -50,8 +50,6 @@ export function h<O extends object>(source: Source<O>, options?: O, ...children:
       resultingOptions.attributes = finalOptions.attributes;
     }
 
-    console.log(source, resultingOptions, finalOptions);
-
     return h(source, resultingOptions, ...children);
   }
 

@@ -7,7 +7,6 @@ export interface User {
 
 export const [user, updateUser] = createContext<User>({ type: "Anonymous" });
 
-
 export default function UserPreference() {
 
   return (
@@ -30,11 +29,13 @@ export default function UserPreference() {
     });
   }
 
-  async function *UserType() {
-    yield* user().map(
-      user => <p>{user.type}</p>
-    );
-  }
+}
+
+export async function *UserType({ take = Number.POSITIVE_INFINITY }: { take?: number }) {
+  console.log({ take });
+  yield* user().take(take).map(
+    user => <p>{user.type}</p>
+  );
 }
 
 interface Window {

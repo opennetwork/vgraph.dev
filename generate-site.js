@@ -7,8 +7,8 @@ import { hookFragments } from "@opennetwork/vnode-fragment";
 
 async function generate() {
   await Promise.all([
-    litRender(SiteHead(), dom.window.document.head),
-    litRender(await hookFragments()(SiteBody()), dom.window.document.body)
+    litRender(SiteHead, dom.window.document.head),
+    litRender(await hookFragments()(SiteBody), dom.window.document.body)
   ]);
   const html = dom.serialize();
   await promisify(writeFile)("./dist/index.html", html);
