@@ -20,12 +20,10 @@ const Footer = (
   </footer>
 );
 
-export default function () {
-  return (
-    <fragment>
-      <Header />
-      <Body />
-      <Footer />
-    </fragment>
-  );
-}
+export default (
+  <fragment>
+    <Header />
+    <Body />
+    <Footer />
+  </fragment>
+);

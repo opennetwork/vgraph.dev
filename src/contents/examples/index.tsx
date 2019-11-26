@@ -22,12 +22,13 @@ export const ExampleContents = (
       This means that the component only updates the visual state once, and can be considered static to VGraph
     </p>
     <Example source="single-render" wait={TIMEOUT_MILLISECONDS} />
-    <h3>Static Components</h3>
+    <h3>Static Nodes</h3>
     <p>
-      The next example shows static components<br />
-      We don't need an instance of a function or class to render these, they are inserted
+      The next example shows static nodes<br />
+      We don't need an instance of a function or class to render these, they are re-evaluated each time they are referenced<br />
+      A static node can be used the same way as any other node
     </p>
-    <Example source="static-component" wait={TIMEOUT_MILLISECONDS} />
+    <Example source="static-node" wait={TIMEOUT_MILLISECONDS} />
     <h3>Async Single Render</h3>
     <p>
       The next example shows an async single rendering component<br />
