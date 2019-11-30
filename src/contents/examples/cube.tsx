@@ -100,9 +100,17 @@ export default function () {
 
   return (
     <fragment>
-      <p>
-        Rendering {totalCount} cubes across {surfaces} surfaces ({count} cubes each) at <FPS /> frames per second
-      </p>
+      {
+        surfaces === 1 ? (
+          <p>
+            Rendering {totalCount} cubes at <FPS/> frames per second
+          </p>
+        ) : (
+          <p>
+            Rendering {totalCount} cubes across {surfaces} surfaces ({count} cubes each) at <FPS /> frames per second
+          </p>
+        )
+      }
       <p>
         Each cube renders a total of {domNodesPerCube} DOM elements, 1 being the cube parent, and {domNodesPerCube - 1} being each face of the cube<br />
         Each cube will rotate {frameDelta} degrees in each direction (X, Y, & Z) on each frame, rotating a total of {maxDelta} degrees throughout this demo (<RemainingDelta /> degrees remaining)
