@@ -77,6 +77,7 @@ function Surface({ delta, count: length = 1, signal }: SurfaceOptions) {
 }
 
 export default function () {
+  const count = 100;
   const delta = source<number>();
   const fps = source<string>();
   const { resolve: signal, promise: onSignal } = defer<void>();
@@ -84,9 +85,9 @@ export default function () {
   return (
     <fragment>
       <p>
-        FPS: <FPS />
+        Rendering {count} cubes at <FPS /> frames per second
       </p>
-      <Surface delta={asyncExtendedIterable(delta)} count={200} signal={signal} />
+      <Surface delta={asyncExtendedIterable(delta)} count={count} signal={signal} />
       <Controller />
     </fragment>
   );

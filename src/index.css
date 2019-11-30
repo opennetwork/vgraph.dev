@@ -119,26 +119,25 @@ a, button {
   height: var(--cube-size);
   border: 1px solid olivedrab;
   background-color: rgba(95,158,160,0.3);
-  transform: translateZ(var(--cube-size-face-z));
 }
 
 .cube-face-top {
-  transform: rotateX(90deg);
+  transform: rotateX(90deg) translateZ(var(--cube-size-face-z));
 }
 .cube-face-bottom {
-  transform: rotateX(-90deg);
+  transform: rotateX(-90deg) translateZ(var(--cube-size-face-z));
 }
 .cube-face-left {
-  transform: rotateY(-90deg);
+  transform: rotateY(-90deg) translateZ(var(--cube-size-face-z));
 }
 .cube-face-right {
-  transform: rotateY(90deg);
+  transform: rotateY(90deg) translateZ(var(--cube-size-face-z));
 }
 .cube-face-front {
-  transform: rotateY(0deg);
+  transform: rotateY(0deg) translateZ(var(--cube-size-face-z));
 }
 .cube-face-back {
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translateZ(var(--cube-size-face-z));
 }
 
 .cubes {
