@@ -113,12 +113,13 @@ a, button {
   width: var(--cube-size);
   height: var(--cube-size);
   border: 1px solid rgba(95,158,160,0.3);
-  z-index: 50;
 }
 
-.cube:focus .cube-face {
-  border-color: red;
-  z-index: 100;
+.cube:nth-child(1) .cube-face {
+  border-color: slateblue;
+}
+.cube:nth-child(2) .cube-face {
+  border-color: deeppink;
 }
 
 .cube-face-top {

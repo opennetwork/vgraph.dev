@@ -2,7 +2,22 @@ import { h } from "../../h";
 import { ExtendedAsyncIterable, source, asyncExtendedIterable } from "iterable";
 import { defer } from "../defer";
 
-const randomAngle = () => (Math.random() * 360);
+function randomAngle() {
+  return Math.random() * 360;
+}
+
+function signals(count: number): [() => void, Promise<void>] {
+  let signalled = 0;
+  const { resolve: complete, promise } = defer<void>();
+  return [signal, promise];
+
+  function signal () {
+    signalled += 1;
+    if (signalled === count) {
+      complete();
+    }
+  }
+}
 
 interface CubeOptions {
   x: number;
@@ -48,14 +63,8 @@ interface SurfaceOptions {
 
 function Surface({ delta, count: length = 1, signal }: SurfaceOptions) {
 
-  let signalled: number = 0;
-
-  function childSignal() {
-    signalled += 1;
-    if (signalled === length) {
-      signal();
-    }
-  }
+  const [childSignal, onSignalled] = signals(length);
+  onSignalled.then(signal);
 
   return (
     <div class="cubes">
@@ -86,16 +95,8 @@ export default function () {
   const delta = source<number>();
   const fps = source<number>();
   const remainingDelta = source<number>();
-  const { resolve: signal, promise: onSignal } = defer<void>();
 
-  let signalled: number = 0;
-
-  function childSignal() {
-    signalled += 1;
-    if (signalled === surfaces) {
-      signal();
-    }
-  }
+  const [childSignal, onSignalled] = signals(surfaces);
 
   return (
     <fragment>
@@ -134,7 +135,7 @@ export default function () {
   }
 
   async function Controller() {
-    await onSignal;
+    await onSignalled;
     let currentDelta: number = 0;
     let lastCalledTime: number = 0;
     do {
@@ -152,3 +153,4 @@ export default function () {
     remainingDelta.close();
   }
 }
+
