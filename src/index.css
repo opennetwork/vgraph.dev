@@ -117,8 +117,7 @@ a, button {
   position: absolute;
   width: var(--cube-size);
   height: var(--cube-size);
-  border: 1px solid olivedrab;
-  background-color: rgba(95,158,160,0.3);
+  border: 1px solid rgba(95,158,160,0.3);
 }
 
 .cube-face-top {

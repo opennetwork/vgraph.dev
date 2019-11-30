@@ -77,24 +77,59 @@ function Surface({ delta, count: length = 1, signal }: SurfaceOptions) {
 }
 
 export default function () {
-  const count = 100;
+  const domNodesPerCube = 7;
+  const count = 150;
+  const surfaces = 1;
+  const frameDelta = 0.25;
+  const maxDelta = 360;
   const delta = source<number>();
-  const fps = source<string>();
+  const fps = source<number>();
+  const remainingDelta = source<number>();
   const { resolve: signal, promise: onSignal } = defer<void>();
+
+  let signalled: number = 0;
+
+  function childSignal() {
+    signalled += 1;
+    if (signalled === surfaces) {
+      signal();
+    }
+  }
 
   return (
     <fragment>
       <p>
-        Rendering {count} cubes at <FPS /> frames per second
+        Rendering {count * surfaces} cubes across {surfaces} surfaces ({count} cubes each) at <FPS /> frames per second
       </p>
-      <Surface delta={asyncExtendedIterable(delta)} count={count} signal={signal} />
+      <p>
+        Each cube renders a total of {domNodesPerCube} DOM elements, 1 being the cube parent, and {domNodesPerCube - 1} being each face of the cube<br />
+        Currently there are {count * domNodesPerCube} DOM elements being rendered every frame, at <DOMNodesPS /> repaints per second<br />
+        Each cube will rotate {frameDelta} degrees in each direction (X, Y, & Z) on each frame, rotating a total of {maxDelta} degrees throughout this demo (<RemainingDelta /> degrees remaining)
+      </p>
+      {
+        Array.from({ length: surfaces }).map(
+          () => <Surface delta={asyncExtendedIterable(delta)} signal={childSignal} count={count} />
+        )
+      }
       <Controller />
     </fragment>
   );
 
   async function *FPS() {
     for await (const value of fps) {
-      yield <fragment>{value}</fragment>;
+      yield <fragment>{value.toFixed()}</fragment>;
+    }
+  }
+
+  async function *DOMNodesPS() {
+    for await (const value of fps) {
+      yield <fragment>{(value * count * domNodesPerCube).toFixed()}</fragment>;
+    }
+  }
+
+  async function *RemainingDelta() {
+    for await (const value of remainingDelta) {
+      yield <fragment>{value.toFixed()} degrees</fragment>;
     }
   }
 
@@ -105,13 +140,16 @@ export default function () {
     do {
       await new Promise(resolve => requestAnimationFrame(resolve));
       const timeDelta = Date.now() - lastCalledTime;
-      fps.push((1 / (timeDelta / 1000)).toFixed());
-      currentDelta += 0.1;
+      fps.push(1 / (timeDelta / 1000));
+      currentDelta += frameDelta;
       lastCalledTime = Date.now();
       delta.push(currentDelta);
+      remainingDelta.push(maxDelta - currentDelta);
       // continue for 15 seconds
-    } while (currentDelta < 360);
+    } while (currentDelta < maxDelta);
     console.log("Done");
     delta.close();
+    fps.close();
+    remainingDelta.close();
   }
 }
