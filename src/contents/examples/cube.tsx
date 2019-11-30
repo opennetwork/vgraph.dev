@@ -18,12 +18,12 @@ async function *Cube({ delta, x, y, z, signal }: CubeOptions) {
 
   yield (
     <div class="cube" onBeforeRender={(value: HTMLElement) => { element = value; }} style={`transform: ${transform()}`}>
-      <div class="cube-face-top" />
-      <div class="cube-face-bottom" />
-      <div class="cube-face-left" />
-      <div class="cube-face-right" />
-      <div class="cube-face-front" />
-      <div class="cube-face-back" />
+      <div class="cube-face cube-face-top" />
+      <div class="cube-face cube-face-bottom" />
+      <div class="cube-face cube-face-left" />
+      <div class="cube-face cube-face-right" />
+      <div class="cube-face cube-face-front" />
+      <div class="cube-face cube-face-back" />
     </div>
   );
 

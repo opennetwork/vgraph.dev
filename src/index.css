@@ -108,16 +108,17 @@ a, button {
   transform: translateZ(var(--cube-size-face-z));
 }
 
-.cube-face-top,
-.cube-face-bottom,
-.cube-face-left,
-.cube-face-right,
-.cube-face-front,
-.cube-face-back {
+.cube-face {
   position: absolute;
   width: var(--cube-size);
   height: var(--cube-size);
   border: 1px solid rgba(95,158,160,0.3);
+  z-index: 50;
+}
+
+.cube:focus .cube-face {
+  border-color: red;
+  z-index: 100;
 }
 
 .cube-face-top {
