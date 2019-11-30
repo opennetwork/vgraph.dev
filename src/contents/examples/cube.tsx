@@ -90,8 +90,8 @@ export default function () {
   const count = 100;
   const surfaces = 1;
   const totalCount = count * surfaces;
-  const frameDelta = 0.25;
-  const maxDelta = 360;
+  const frameDelta = 0.1;
+  const maxDelta = 180;
   const delta = source<number>();
   const fps = source<number>();
   const remainingDelta = source<number>();
