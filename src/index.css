@@ -1,3 +1,8 @@
+:root {
+  --cube-size: 300px;
+  --cube-size-face-z: -150px;
+}
+
 body {
   font-family: Helvetica, Arial, sans-serif;
   color: black;
@@ -94,3 +99,63 @@ a, button {
 .code-example [role="tablist"] label {
   margin-right: 10px;
 }
+
+.cube {
+  width: var(--cube-size);
+  height: var(--cube-size);
+  position: relative;
+  transform-style: preserve-3d;
+  transform: translateZ(var(--cube-size-face-z));
+}
+
+.cube-face-top,
+.cube-face-bottom,
+.cube-face-left,
+.cube-face-right,
+.cube-face-front,
+.cube-face-back {
+  position: absolute;
+  width: var(--cube-size);
+  height: var(--cube-size);
+  border: 1px solid olivedrab;
+  background-color: rgba(95,158,160,0.3);
+  transform: translateZ(var(--cube-size-face-z));
+}
+
+.cube-face-top {
+  transform: rotateX(90deg);
+}
+.cube-face-bottom {
+  transform: rotateX(-90deg);
+}
+.cube-face-left {
+  transform: rotateY(-90deg);
+}
+.cube-face-right {
+  transform: rotateY(90deg);
+}
+.cube-face-front {
+  transform: rotateY(0deg);
+}
+.cube-face-back {
+  transform: rotateY(180deg);
+}
+
+.cubes {
+  position: relative;
+  width: 100%;
+  height: calc(var(--cube-size) * 2);
+  min-width: calc(var(--cube-size) * 2);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  padding-top: calc(var(--cube-size) / 2);
+  box-sizing: border-box;
+}
+
+.cubes .cube {
+  position: absolute;
+}
+
+

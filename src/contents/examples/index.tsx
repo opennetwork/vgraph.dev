@@ -8,7 +8,7 @@ export const ExampleContents = (
   <fragment>
     <h2>Examples</h2>
     <p>
-      Below are examples written in TypeScript which show different ways you can express virtual nodes<br />
+      Below are examples authored in TypeScript which show different ways you can express virtual nodes<br />
       For these examples we're utilising <a href="https://github.com/opennetwork/vdom">vdom</a> to project the graph state into the DOM<br/>
       You can view each of these examples source on <a href="https://github.com/opennetwork/vgraph.dev/tree/master/src/contents/examples">GitHub</a>
     </p>
@@ -58,5 +58,10 @@ export const ExampleContents = (
       The next example shows a context value being defined that can be utilised within any async context.
     </p>
     <Example source="user-preference" wait={TIMEOUT_MILLISECONDS} />
+    <h3>Cube</h3>
+    <p>
+      The next example shows a set of cubes with updating state
+    </p>
+    <Example source="cube" wait={TIMEOUT_MILLISECONDS} />
   </fragment>
 );
