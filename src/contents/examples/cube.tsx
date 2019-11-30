@@ -145,7 +145,6 @@ export default function () {
       lastCalledTime = Date.now();
       delta.push(currentDelta);
       remainingDelta.push(maxDelta - currentDelta);
-      // continue for 15 seconds
     } while (currentDelta < maxDelta);
     console.log("Done");
     delta.close();
