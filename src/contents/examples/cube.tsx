@@ -1,6 +1,7 @@
 import { h } from "../../h";
 import { ExtendedAsyncIterable, source, asyncExtendedIterable } from "iterable";
 import { defer } from "../defer";
+import { isChrome } from "./is-chrome";
 
 function randomAngle() {
   return Math.random() * 360;
@@ -87,11 +88,12 @@ function Surface({ delta, count: length = 1, signal }: SurfaceOptions) {
 
 export default function () {
   const domNodesPerCube = 7;
-  const count = 100;
+  const count = isChrome() ? 100 : 20;
   const surfaces = 1;
   const totalCount = count * surfaces;
   const frameDelta = 0.1;
-  const maxDelta = 180;
+  const maxDelta = isChrome() ? 180 : 90;
+  const maxFPS = isChrome() ? Number.POSITIVE_INFINITY : 35;
   const delta = source<number>();
   const fps = source<number>();
   const remainingDelta = source<number>();
@@ -103,7 +105,7 @@ export default function () {
       {
         surfaces === 1 ? (
           <p>
-            Rendering {totalCount} cubes at <FPS/> frames per second
+            Rendering {totalCount} cubes at <FPS/> frames per second{maxFPS === Number.POSITIVE_INFINITY ? "" : ` (limited to ${maxFPS} frames per second)`}
           </p>
         ) : (
           <p>
@@ -149,7 +151,14 @@ export default function () {
     do {
       await new Promise(resolve => requestAnimationFrame(resolve));
       const timeDelta = Date.now() - lastCalledTime;
-      fps.push(1 / (timeDelta / 1000));
+      const currentFPS = 1 / (timeDelta / 1000);
+      if (currentFPS > maxFPS) {
+        // To quick!
+        await new Promise(resolve => setTimeout(resolve, 10));
+        continue;
+      }
+
+      fps.push(currentFPS);
       currentDelta += frameDelta;
       lastCalledTime = Date.now();
       delta.push(currentDelta);

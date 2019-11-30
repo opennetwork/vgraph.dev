@@ -190,6 +190,7 @@ declare namespace JSX {
     hr: HTMLElementAttributes;
     main: HTMLElementAttributes;
     label: HTMLElementAttributes;
+    em: HTMLElementAttributes;
   }
 
   interface IntrinsicElements extends DOMElements {
