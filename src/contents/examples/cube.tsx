@@ -78,8 +78,9 @@ function Surface({ delta, count: length = 1, signal }: SurfaceOptions) {
 
 export default function () {
   const domNodesPerCube = 7;
-  const count = 150;
+  const count = 100;
   const surfaces = 1;
+  const totalCount = count * surfaces;
   const frameDelta = 0.25;
   const maxDelta = 360;
   const delta = source<number>();
@@ -99,11 +100,10 @@ export default function () {
   return (
     <fragment>
       <p>
-        Rendering {count * surfaces} cubes across {surfaces} surfaces ({count} cubes each) at <FPS /> frames per second
+        Rendering {totalCount} cubes across {surfaces} surfaces ({count} cubes each) at <FPS /> frames per second
       </p>
       <p>
         Each cube renders a total of {domNodesPerCube} DOM elements, 1 being the cube parent, and {domNodesPerCube - 1} being each face of the cube<br />
-        Currently there are {count * domNodesPerCube} DOM elements being rendered every frame, at <DOMNodesPS /> repaints per second<br />
         Each cube will rotate {frameDelta} degrees in each direction (X, Y, & Z) on each frame, rotating a total of {maxDelta} degrees throughout this demo (<RemainingDelta /> degrees remaining)
       </p>
       {
@@ -123,7 +123,7 @@ export default function () {
 
   async function *DOMNodesPS() {
     for await (const value of fps) {
-      yield <fragment>{(value * count * domNodesPerCube).toFixed()}</fragment>;
+      yield <fragment>{(value * totalCount * domNodesPerCube).toFixed()}</fragment>;
     }
   }
 
