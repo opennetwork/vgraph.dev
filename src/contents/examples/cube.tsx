@@ -88,7 +88,7 @@ function Surface({ delta, count: length = 1, signal }: SurfaceOptions) {
 
 export default function () {
   const domNodesPerCube = 7;
-  const count = isChrome() ? 100 : 20;
+  const count = isChrome() ? 100 : 50;
   const surfaces = 1;
   const totalCount = count * surfaces;
   const frameDelta = 0.1;

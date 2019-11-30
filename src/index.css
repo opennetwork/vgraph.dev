@@ -112,14 +112,17 @@ a, button {
   position: absolute;
   width: var(--cube-size);
   height: var(--cube-size);
-  border: 1px solid rgba(95,158,160,0.3);
+  border: 1px solid rgba(95,158,160,0.5);
+  z-index: 10;
 }
 
 .cube:nth-child(1) .cube-face {
-  border-color: slateblue;
+  border: 4px dashed firebrick;
+  z-index: 20;
 }
 .cube:nth-child(2) .cube-face {
-  border-color: deeppink;
+  border: 4px dashed deeppink;
+  z-index: 20;
 }
 
 .cube-face-top {
