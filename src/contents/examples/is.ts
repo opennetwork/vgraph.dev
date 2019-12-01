@@ -25,3 +25,7 @@ export function isChrome(): boolean {
     isIEedge === false
   );
 }
+
+export function isSafari() {
+  return /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
+}

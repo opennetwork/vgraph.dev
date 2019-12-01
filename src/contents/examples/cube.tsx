@@ -1,7 +1,7 @@
 import { h } from "../../h";
 import { ExtendedAsyncIterable, source, asyncExtendedIterable } from "iterable";
 import { defer } from "../defer";
-import { isChrome } from "./is-chrome";
+import { isChrome, isSafari } from "./is";
 
 function randomAngle() {
   return Math.random() * 360;
@@ -86,17 +86,25 @@ function Surface({ delta, count: length = 1, signal }: SurfaceOptions) {
   );
 }
 
-export default function () {
+interface CubeRendererOptions {
+  count?: number;
+}
+
+function CubeRenderer({ count: requestedCount }: CubeRendererOptions) {
   const domNodesPerCube = 7;
-  const count = isChrome() ? 100 : 50;
+  // WebKit (used in Safari) treats a transform change as a layout change, so is a bit slower!
+  const count = isSafari() ? 5 : (requestedCount || (isChrome() ? 1000 : 100));
   const surfaces = 1;
   const totalCount = count * surfaces;
-  const frameDelta = 0.1;
-  const maxDelta = isChrome() ? 180 : 90;
-  const maxFPS = isChrome() ? Number.POSITIVE_INFINITY : 35;
+  const frameDelta = 0.2;
+  const maxDelta = isSafari() ? 90 : 180;
+  // Chrome can reach max FPS no problem, other browsers drag at max (60-70 fps)
+  // so we have to limit them
+  const maxFPS = isSafari() ? 30 : 100;
+
   const delta = source<number>();
   const fps = source<number>();
-  const remainingDelta = source<number>();
+  const remainingDelta = asyncExtendedIterable(delta).map(delta => maxDelta - delta);
 
   const [childSignal, onSignalled] = signals(surfaces);
 
@@ -105,7 +113,7 @@ export default function () {
       {
         surfaces === 1 ? (
           <p>
-            Rendering {totalCount} cubes at <FPS/> frames per second{maxFPS === Number.POSITIVE_INFINITY ? "" : ` (limited to ${maxFPS} frames per second)`}
+            Rendering {totalCount} cubes at <FPS/> frames per second{maxFPS === Number.POSITIVE_INFINITY ? "" : ` (limited to ${maxFPS} frames per second)`}, utilising <TPF />ms per frame
           </p>
         ) : (
           <p>
@@ -132,6 +140,12 @@ export default function () {
     }
   }
 
+  async function *TPF() {
+    for await (const value of fps) {
+      yield <fragment>{(1000 / value).toFixed()}</fragment>;
+    }
+  }
+
   async function *DOMNodesPS() {
     for await (const value of fps) {
       yield <fragment>{(value * totalCount * domNodesPerCube).toFixed()}</fragment>;
@@ -154,20 +168,51 @@ export default function () {
       const currentFPS = 1 / (timeDelta / 1000);
       if (currentFPS > maxFPS) {
         // To quick!
-        await new Promise(resolve => setTimeout(resolve, 10));
         continue;
       }
-
       fps.push(currentFPS);
       currentDelta += frameDelta;
       lastCalledTime = Date.now();
       delta.push(currentDelta);
-      remainingDelta.push(maxDelta - currentDelta);
     } while (currentDelta < maxDelta);
-    console.log("Done");
     delta.close();
     fps.close();
-    remainingDelta.close();
   }
 }
 
+export default function CubeExample() {
+  if (isSafari()) {
+    // Safari/WebKit is limited to the default cubes
+    return <CubeRenderer />;
+  }
+
+  return (
+    <div class="cube-example">
+      <Run />
+    </div>
+  );
+
+  async function *Run() {
+    const { resolve: count, promise: onCount } = defer<number>();
+    const options = [
+      10, 100, 200, 500, 1000, 2000, 4000
+    ];
+
+    yield (
+      <fragment>
+        {
+          options.map(option => (
+            <button onBeforeRender={element => element.addEventListener("click", () => count(option), { once: true })}>
+              Render {option} Cubes
+            </button>
+          ))
+        }
+      </fragment>
+    );
+
+    yield <CubeRenderer count={await onCount} />;
+
+    // Restart
+    yield <Run />;
+  }
+}

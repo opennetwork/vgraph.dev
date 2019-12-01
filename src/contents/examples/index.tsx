@@ -60,8 +60,7 @@ export const ExampleContents = (
     <Example source="user-preference" wait={TIMEOUT_MILLISECONDS} />
     <h3>Cube</h3>
     <p>
-      The next example shows a set of cubes with updating state<br />
-      This example has been tested working quick with Chrome, but Firefox and Safari doesn't perform as well, so the demo changes its configuration based on browser <em>for now</em>
+      The next example shows a set of cubes with updating state
     </p>
     <Example source="cube" wait={TIMEOUT_MILLISECONDS} />
   </fragment>
