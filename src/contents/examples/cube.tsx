@@ -91,9 +91,8 @@ interface CubeRendererOptions {
 }
 
 function CubeRenderer({ count: requestedCount }: CubeRendererOptions) {
-  const domNodesPerCube = 7;
-  // WebKit (used in Safari) treats a transform change as a layout change, so is a bit slower!
-  const count = isSafari() ? 5 : (requestedCount || (isChrome() ? 1000 : 100));
+  // Safari is slow with these transforms at this point in time, so I want to limit it for now
+  const count = isSafari() ? 5 : (requestedCount || 100);
   const surfaces = 1;
   const totalCount = count * surfaces;
   const frameDelta = 0.2;
@@ -110,19 +109,10 @@ function CubeRenderer({ count: requestedCount }: CubeRendererOptions) {
 
   return (
     <fragment>
-      {
-        surfaces === 1 ? (
-          <p>
-            Rendering {totalCount} cubes at <FPS/> frames per second{maxFPS === Number.POSITIVE_INFINITY ? "" : ` (limited to ${maxFPS} frames per second)`}, utilising <TPF />ms per frame
-          </p>
-        ) : (
-          <p>
-            Rendering {totalCount} cubes across {surfaces} surfaces ({count} cubes each) at <FPS /> frames per second
-          </p>
-        )
-      }
       <p>
-        Each cube renders a total of {domNodesPerCube} DOM elements, 1 being the cube parent, and {domNodesPerCube - 1} being each face of the cube<br />
+        Rendering {totalCount} cubes{surfaces > 1 ? ` across ${surfaces} surfaces (${count} cubes each)` : ""} at <FPS/> frames per second{maxFPS === Number.POSITIVE_INFINITY ? "" : ` (limited to ${maxFPS} frames per second)`}, utilising <TPF />ms of time per frame
+      </p>
+      <p>
         Each cube will rotate {frameDelta} degrees in each direction (X, Y, & Z) on each frame, rotating a total of {maxDelta} degrees throughout this demo (<RemainingDelta /> degrees remaining)
       </p>
       {
@@ -143,12 +133,6 @@ function CubeRenderer({ count: requestedCount }: CubeRendererOptions) {
   async function *TPF() {
     for await (const value of fps) {
       yield <fragment>{(1000 / value).toFixed()}</fragment>;
-    }
-  }
-
-  async function *DOMNodesPS() {
-    for await (const value of fps) {
-      yield <fragment>{(value * totalCount * domNodesPerCube).toFixed()}</fragment>;
     }
   }
 
