@@ -97,7 +97,7 @@ function CubeRenderer({ count: requestedCount }: CubeRendererOptions) {
   const surfaces = 1;
   const totalCount = count * surfaces;
   const frameDelta = 0.2;
-  const maxDelta = isSafari() ? 90 : 180;
+  const maxDelta = 45;
   // Chrome can reach max FPS no problem, other browsers drag at max (60-70 fps)
   // so we have to limit them
   const maxFPS = isSafari() ? 30 : 100;
