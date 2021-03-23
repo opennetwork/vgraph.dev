@@ -14,7 +14,6 @@ export const ModulesContents = (
       <li><a href="https://github.com/opennetwork/iterable">iterable</a></li>
       <li><a href="https://github.com/opennetwork/vnode">@opennetwork/vnode</a></li>
       <li><a href="https://github.com/opennetwork/vnode-hooks">@opennetwork/vnode-hooks</a></li>
-      <li><a href="https://github.com/opennetwork/vnode-fragment">@opennetwork/vnode-fragment</a></li>
       <li><a href="https://github.com/opennetwork/vdom">@opennetwork/vdom</a></li>
     </ul>
   </fragment>

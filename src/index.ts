@@ -1,13 +1,12 @@
 import { SiteBody, SiteHead } from "./site";
-import { litRender } from "@opennetwork/vdom";
-import { hookFragments } from "@opennetwork/vnode-fragment";
+import { render } from "@opennetwork/vdom";
 
 const start = Date.now();
 
 (async function run() {
   await Promise.all([
-    litRender(SiteHead, window.document.head),
-    litRender(await hookFragments()(SiteBody), window.document.body)
+    render(SiteHead, window.document.head),
+    render(SiteBody, window.document.body)
   ]);
 })()
   .then(() => console.log(`Render complete after ${(Date.now() - start) / 1000} seconds`))

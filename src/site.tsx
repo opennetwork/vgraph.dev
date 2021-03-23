@@ -10,6 +10,8 @@ export const SiteHead = (
   </fragment>
 );
 
+console.log({ PRIMARY_SCRIPT_SOURCE });
+
 export const SiteBody = (
   <fragment>
     <SiteContents />

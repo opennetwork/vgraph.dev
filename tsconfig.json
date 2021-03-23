@@ -15,16 +15,17 @@
         "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
-        "baseUrl": ".",
+        "baseUrl": "./src/",
         "paths": {
             "*": [
                 "node_modules/*",
-                "src/types/*"
+                "src/types/*",
+                ".snowpack/types/*"
             ]
         },
         "jsx": "react",
         "jsxFactory": "h",
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
     },
     "include": [
         "src/**/*"

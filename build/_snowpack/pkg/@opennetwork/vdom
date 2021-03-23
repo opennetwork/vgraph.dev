@@ -1,0 +1,16 @@
+/*
+ * Skypack CDN - @opennetwork/vdom@7.0.3
+ *
+ * Learn more:
+ *   📙 Package Documentation: https://www.skypack.dev/view/@opennetwork/vdom
+ *   📘 Skypack Documentation: https://www.skypack.dev/docs
+ *
+ * Pinned URL: (Optimized for Production)
+ *   ▶️ Normal: Not Available. Import this URL to generate.
+ *   ⏩ Minified: Not Available. Import this URL to generate.
+ *
+ */
+
+// Browser-Optimized Imports (Don't directly import the URLs below in your application!)
+export * from '/_snowpack/pkg/new/@opennetwork/vdom@v7.0.3/dist=es2020';
+export {default} from '/_snowpack/pkg/new/@opennetwork/vdom@v7.0.3/dist=es2020';

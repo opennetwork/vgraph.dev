@@ -1,14 +1,13 @@
-import dom from "./jsdom";
+import dom from "./jsdom.js";
 import { SiteHead, SiteBody } from "./dist/site.js";
-import { litRender } from "@opennetwork/vdom";
+import { render } from "@opennetwork/vdom";
 import { writeFile } from "fs";
 import { promisify } from "util";
-import { hookFragments } from "@opennetwork/vnode-fragment";
 
 async function generate() {
   await Promise.all([
-    litRender(SiteHead, dom.window.document.head),
-    litRender(await hookFragments()(SiteBody), dom.window.document.body)
+    render(SiteHead, dom.window.document.head),
+    render(SiteBody, dom.window.document.body)
   ]);
   const html = dom.serialize();
   await promisify(writeFile)("./dist/index.html", html);

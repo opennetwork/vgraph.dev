@@ -9,17 +9,17 @@ export function h<O extends object>(source: Source<O>, options?: O, ...children:
       [Symbol.asyncIterator]: () => {
         let made: boolean = false;
         return {
-          async next(): Promise<IteratorResult<AsyncIterable<VNode>>> {
+          async next(): Promise<IteratorResult<ReadonlyArray<VNode>>> {
             if (made) {
               return { done: true, value: undefined };
             }
             made = true;
             return {
               done: false,
-              value: asyncExtendedIterable([
+              value: [
                 // New one every time
                 hBase(source, options, ...children)
-              ])
+              ]
             };
           }
         };
